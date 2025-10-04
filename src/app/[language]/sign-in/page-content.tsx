@@ -3,7 +3,6 @@ import Button from "@mui/material/Button";
 import LinkItem from "@mui/material/Link";
 import withPageRequiredGuest from "@/services/auth/with-page-required-guest";
 import { useForm, FormProvider, useFormState } from "react-hook-form";
-import { useAuthLoginService } from "@/services/api/services/auth";
 import useAuthActions from "@/services/auth/use-auth-actions";
 import useAuthTokens from "@/services/auth/use-auth-tokens";
 import { useRouter } from "next/navigation";
@@ -17,6 +16,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import Link from "@/components/link";
 import Box from "@mui/material/Box";
 import HTTP_CODES_ENUM from "@/services/api/types/http-codes";
+import { API_URL } from "@/services/api/config";
 import { useTranslation } from "@/services/i18n/client";
 import SocialAuth from "@/services/social-auth/social-auth";
 import Divider from "@mui/material/Divider";
@@ -65,7 +65,6 @@ function FormActions() {
 function Form() {
   const { setUser } = useAuthActions();
   const { setTokensInfo } = useAuthTokens();
-  const fetchAuthLogin = useAuthLoginService();
   const { t } = useTranslation("sign-in");
   const validationSchema = useValidationSchema();
   const router = useRouter();
@@ -82,35 +81,53 @@ function Form() {
   const { handleSubmit, setError } = methods;
 
   const onSubmit = handleSubmit(async (formData) => {
-    const { data, status } = await fetchAuthLogin(formData);
-
-    if (status === HTTP_CODES_ENUM.UNPROCESSABLE_ENTITY) {
-      (Object.keys(data.errors) as Array<keyof SignInFormData>).forEach(
-        (key) => {
-          setError(key, {
-            type: "manual",
-            message: t(
-              `sign-in:inputs.${key}.validation.server.${data.errors[key]}`
-            ),
-          });
-        }
-      );
-
-      return;
-    }
-
-    if (status === HTTP_CODES_ENUM.OK) {
-      setTokensInfo({
-        token: data.token,
-        refreshToken: data.refreshToken,
-        tokenExpires: data.tokenExpires,
+    try {
+      const response = await fetch(`${API_URL}/v1/auth/email/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-custom-lang": language,
+        },
+        body: JSON.stringify(formData),
       });
-      setUser(data.user);
 
-      // Redirect immediately after successful login
-      const params = new URLSearchParams(window.location.search);
-      const returnTo = params.get("returnTo") ?? `/${language}`;
-      router.replace(returnTo);
+      const data = await response.json();
+
+      if (response.status === HTTP_CODES_ENUM.UNPROCESSABLE_ENTITY) {
+        (Object.keys(data.errors) as Array<keyof SignInFormData>).forEach(
+          (key) => {
+            setError(key, {
+              type: "manual",
+              message: t(
+                `sign-in:inputs.${key}.validation.server.${data.errors[key]}`
+              ),
+            });
+          }
+        );
+        return;
+      }
+
+      if (response.status === HTTP_CODES_ENUM.OK) {
+        setTokensInfo({
+          token: data.token,
+          refreshToken: data.refreshToken,
+          tokenExpires: data.tokenExpires,
+        });
+        setUser(data.user);
+
+        // Redirect immediately after successful login
+        const params: URLSearchParams = new URLSearchParams(
+          window.location.search
+        );
+        const returnTo = params.get("returnTo") ?? `/${language}`;
+        router.replace(returnTo);
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("email", {
+        type: "manual",
+        message: t("sign-in:inputs.email.validation.server.error"),
+      });
     }
   });
 

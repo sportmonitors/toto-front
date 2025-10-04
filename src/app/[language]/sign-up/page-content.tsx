@@ -2,10 +2,7 @@
 import Button from "@mui/material/Button";
 import withPageRequiredGuest from "@/services/auth/with-page-required-guest";
 import { useForm, FormProvider, useFormState } from "react-hook-form";
-import {
-  useAuthLoginService,
-  useAuthSignUpService,
-} from "@/services/api/services/auth";
+import { useAuthSignUpService } from "@/services/api/services/auth";
 import useAuthActions from "@/services/auth/use-auth-actions";
 import useAuthTokens from "@/services/auth/use-auth-tokens";
 import Container from "@mui/material/Container";
@@ -19,6 +16,7 @@ import Link from "@/components/link";
 import Box from "@mui/material/Box";
 import MuiLink from "@mui/material/Link";
 import HTTP_CODES_ENUM from "@/services/api/types/http-codes";
+import { API_URL } from "@/services/api/config";
 import { useTranslation } from "@/services/i18n/client";
 import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
@@ -84,7 +82,7 @@ function FormActions() {
 function Form() {
   const { setUser } = useAuthActions();
   const { setTokensInfo } = useAuthTokens();
-  const fetchAuthLogin = useAuthLoginService();
+  const language = useLanguage();
   const fetchAuthSignUp = useAuthSignUpService();
   const { t } = useTranslation("sign-up");
   const validationSchema = useValidationSchema();
@@ -124,18 +122,31 @@ function Form() {
       return;
     }
 
-    const { data: dataSignIn, status: statusSignIn } = await fetchAuthLogin({
-      email: formData.email,
-      password: formData.password,
-    });
-
-    if (statusSignIn === HTTP_CODES_ENUM.OK) {
-      setTokensInfo({
-        token: dataSignIn.token,
-        refreshToken: dataSignIn.refreshToken,
-        tokenExpires: dataSignIn.tokenExpires,
+    try {
+      const response = await fetch(`${API_URL}/v1/auth/email/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-custom-lang": language,
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
       });
-      setUser(dataSignIn.user);
+
+      const dataSignIn = await response.json();
+
+      if (response.status === HTTP_CODES_ENUM.OK) {
+        setTokensInfo({
+          token: dataSignIn.token,
+          refreshToken: dataSignIn.refreshToken,
+          tokenExpires: dataSignIn.tokenExpires,
+        });
+        setUser(dataSignIn.user);
+      }
+    } catch (error) {
+      console.error("Auto-login error after signup:", error);
     }
   });
 

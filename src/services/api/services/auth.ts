@@ -15,20 +15,6 @@ export type AuthLoginResponse = Tokens & {
   user: User;
 };
 
-export function useAuthLoginService() {
-  const fetchBase = useFetch();
-
-  return useCallback(
-    (data: AuthLoginRequest) => {
-      return fetchBase(`${API_URL}/v1/auth/email/login`, {
-        method: "POST",
-        body: JSON.stringify(data),
-      }).then(wrapperFetchJsonResponse<AuthLoginResponse>);
-    },
-    [fetchBase]
-  );
-}
-
 export type AuthGoogleLoginRequest = {
   idToken: string;
 };
