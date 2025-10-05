@@ -1,0 +1,42 @@
+{
+  "app-name": "اپلیکیشن",
+  "loading": "در حال بارگذاری...",
+  "navigation": {
+    "home": "خانه",
+    "tournaments": "مسابقات",
+    "createTournament": "ایجاد مسابقه",
+    "signIn": "ورود",
+    "signUp": "ثبت‌نام",
+    "profile": "پروفایل",
+    "users": "کاربران",
+    "logout": "خروج"
+  },
+  "formInputs": {
+    "avatarInput": {
+      "dropzoneText": "تصویر را اینجا رها کنید...",
+      "dragAndDrop": "یا تصویری را اینجا بکشید و رها کنید",
+      "selectFile": "انتخاب تصویر"
+    },
+    "multipleImageInput": {
+      "dropzoneText": "تصاویر را اینجا رها کنید...",
+      "dragAndDrop": "یا تصاویری را اینجا بکشید و رها کنید",
+      "selectFile": "انتخاب تصویر"
+    },
+    "singleImageInput": {
+      "dropzoneText": "تصاویر را اینجا رها کنید...",
+      "dragAndDrop": "یا تصاویری را اینجا بکشید و رها کنید",
+      "selectFile": "انتخاب تصویر"
+    }
+  },
+  "leavePage": {
+    "title": "از این صفحه خارج شوید؟",
+    "message": "تغییراتی که ایجاد کرده‌اید ممکن است ذخیره نشود",
+    "stay": "در صفحه بمان",
+    "leave": "صفحه را ترک کن"
+  },
+  "auth": {
+    "facebook": {
+      "action": "ورود با فیس‌بوک"
+    }
+  }
+}

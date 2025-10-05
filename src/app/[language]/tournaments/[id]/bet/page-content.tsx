@@ -12,7 +12,6 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import Paper from "@mui/material/Paper";
-import ButtonGroup from "@mui/material/ButtonGroup";
 import Divider from "@mui/material/Divider";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -149,7 +148,7 @@ function BetPageContent({ tournamentId }: Props) {
 
   const handleSubmitBet = async () => {
     if (!calculateBet.isValid) {
-      enqueueSnackbar("Please complete all selections", {
+      enqueueSnackbar(t("betting.pleaseCompleteAllSelections"), {
         variant: "error",
       });
       return;
@@ -172,7 +171,7 @@ function BetPageContent({ tournamentId }: Props) {
       // TODO: Call API to create bet
       console.log("Submitting bet:", betData);
 
-      enqueueSnackbar("Bet placed successfully!", {
+      enqueueSnackbar(t("betting.betPlacedSuccessfully"), {
         variant: "success",
       });
       router.push("/profile/bets");
@@ -214,11 +213,11 @@ function BetPageContent({ tournamentId }: Props) {
   const getStatusText = (status: string) => {
     switch (status) {
       case "upcoming":
-        return "Upcoming";
+        return t("status.upcoming");
       case "active":
-        return "Active";
+        return t("status.active");
       case "finished":
-        return "Finished";
+        return t("status.finished");
       default:
         return status;
     }
@@ -245,7 +244,7 @@ function BetPageContent({ tournamentId }: Props) {
             variant={isMobile ? "body1" : "h6"}
             sx={{ color: theme.palette.text.primary }}
           >
-            Loading tournament data...
+            {t("betting.loading")}
           </Typography>
         </Box>
       </Container>
@@ -280,7 +279,7 @@ function BetPageContent({ tournamentId }: Props) {
               color: theme.palette.error.main,
             }}
           >
-            Betting is closed for this tournament
+            {t("betting.bettingClosed")}
           </Typography>
           <Typography
             variant={isMobile ? "body2" : "body1"}
@@ -292,7 +291,7 @@ function BetPageContent({ tournamentId }: Props) {
               mb: 3,
             }}
           >
-            This tournament is no longer accepting bets.
+            {t("betting.bettingClosedDescription")}
           </Typography>
           <Button
             variant="contained"
@@ -303,7 +302,7 @@ function BetPageContent({ tournamentId }: Props) {
               fontWeight: 600,
             }}
           >
-            Go Back
+            {t("betting.goBack")}
           </Button>
         </Box>
       </Container>
@@ -348,7 +347,7 @@ function BetPageContent({ tournamentId }: Props) {
                           color: theme.palette.text.secondary,
                         }}
                       >
-                        Status
+                        {t("betting.status")}
                       </Typography>
                       <Box mt={0.5}>
                         <Chip
@@ -398,7 +397,7 @@ function BetPageContent({ tournamentId }: Props) {
                           color: theme.palette.text.secondary,
                         }}
                       >
-                        Games Progress
+                        {t("gamesProgress")}
                       </Typography>
                       <Typography
                         variant={isMobile ? "h6" : "h5"}
@@ -447,7 +446,7 @@ function BetPageContent({ tournamentId }: Props) {
                           color: theme.palette.text.secondary,
                         }}
                       >
-                        Your Score
+                        {t("yourScore")}
                       </Typography>
                       <Typography
                         variant={isMobile ? "h6" : "h5"}
@@ -496,7 +495,7 @@ function BetPageContent({ tournamentId }: Props) {
                           color: theme.palette.text.secondary,
                         }}
                       >
-                        Participants
+                        {t("participants")}
                       </Typography>
                       <Typography
                         variant={isMobile ? "h6" : "h5"}
@@ -555,7 +554,7 @@ function BetPageContent({ tournamentId }: Props) {
                         color: theme.palette.text.secondary,
                       }}
                     >
-                      Perfect Score
+                      {t("perfectScore")}
                     </Typography>
                   </Box>
                 </Grid>
@@ -579,7 +578,7 @@ function BetPageContent({ tournamentId }: Props) {
                         color: theme.palette.text.secondary,
                       }}
                     >
-                      One Wrong
+                      {t("oneWrong")}
                     </Typography>
                   </Box>
                 </Grid>
@@ -603,7 +602,7 @@ function BetPageContent({ tournamentId }: Props) {
                         color: theme.palette.text.secondary,
                       }}
                     >
-                      Two Wrong
+                      {t("twoWrong")}
                     </Typography>
                   </Box>
                 </Grid>
@@ -627,7 +626,7 @@ function BetPageContent({ tournamentId }: Props) {
                         color: theme.palette.text.secondary,
                       }}
                     >
-                      No Wrong
+                      {t("noWrong")}
                     </Typography>
                   </Box>
                 </Grid>
@@ -660,7 +659,14 @@ function BetPageContent({ tournamentId }: Props) {
                         },
                       }}
                     >
-                      <CardContent sx={{ p: 2 }}>
+                      <CardContent
+                        sx={{
+                          p: isMobile ? 1.5 : 2,
+                          "&:last-child": { pb: isMobile ? 1.5 : 2 },
+                          overflow: "hidden",
+                          width: "100%",
+                        }}
+                      >
                         <Box display="flex" alignItems="center" mb={1.5}>
                           <SportsSoccerIcon
                             sx={{
@@ -677,7 +683,7 @@ function BetPageContent({ tournamentId }: Props) {
                               color: theme.palette.text.primary,
                             }}
                           >
-                            Match {match.matchOrder}
+                            {t("betting.match")} {match.matchOrder}
                           </Typography>
                         </Box>
 
@@ -707,10 +713,13 @@ function BetPageContent({ tournamentId }: Props) {
                           {format(new Date(match.startsAt), "MMM dd, HH:mm")}
                         </Typography>
 
-                        <ButtonGroup
-                          variant="outlined"
-                          fullWidth
-                          sx={{ border: 0 }}
+                        <Box
+                          sx={{
+                            display: "flex",
+                            width: "100%",
+                            gap: 1,
+                            maxWidth: "100%",
+                          }}
                         >
                           <Button
                             variant={
@@ -721,8 +730,8 @@ function BetPageContent({ tournamentId }: Props) {
                             onClick={() =>
                               toggleSelection(match.id, MatchResult.HOME)
                             }
-                            sx={{ flex: 1, borderRight: 0 }}
                             size="small"
+                            sx={{ width: "100%" }}
                           >
                             1
                           </Button>
@@ -735,10 +744,8 @@ function BetPageContent({ tournamentId }: Props) {
                             onClick={() =>
                               toggleSelection(match.id, MatchResult.DRAW)
                             }
-                            sx={{
-                              flex: 1,
-                            }}
                             size="small"
+                            sx={{ width: "100%" }}
                           >
                             X
                           </Button>
@@ -751,12 +758,12 @@ function BetPageContent({ tournamentId }: Props) {
                             onClick={() =>
                               toggleSelection(match.id, MatchResult.AWAY)
                             }
-                            sx={{ flex: 1 }}
                             size="small"
+                            sx={{ width: "100%" }}
                           >
                             2
                           </Button>
-                        </ButtonGroup>
+                        </Box>
 
                         {matchSelections.length > 0 && (
                           <Box mt={1}>
@@ -769,9 +776,13 @@ function BetPageContent({ tournamentId }: Props) {
                                 fontWeight: 500,
                               }}
                             >
-                              Selected: {matchSelections.join(", ")} (
-                              {matchSelections.length} option
-                              {matchSelections.length > 1 ? "s" : ""})
+                              {t("betting.selected")}:{" "}
+                              {matchSelections.join(", ")} (
+                              {matchSelections.length}{" "}
+                              {matchSelections.length > 1
+                                ? t("options")
+                                : t("option")}
+                              )
                             </Typography>
                           </Box>
                         )}
@@ -811,7 +822,7 @@ function BetPageContent({ tournamentId }: Props) {
                         color: theme.palette.primary.main,
                       }}
                     >
-                      Match
+                      {t("betting.match")}
                     </TableCell>
                     <TableCell
                       sx={{
@@ -819,7 +830,7 @@ function BetPageContent({ tournamentId }: Props) {
                         color: theme.palette.primary.main,
                       }}
                     >
-                      Teams
+                      {t("betting.teams")}
                     </TableCell>
                     <TableCell
                       sx={{
@@ -827,16 +838,7 @@ function BetPageContent({ tournamentId }: Props) {
                         color: theme.palette.primary.main,
                       }}
                     >
-                      Date & Time
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      sx={{
-                        fontWeight: 600,
-                        color: theme.palette.primary.main,
-                      }}
-                    >
-                      Home (1)
+                      {t("betting.dateTime")}
                     </TableCell>
                     <TableCell
                       align="center"
@@ -845,7 +847,7 @@ function BetPageContent({ tournamentId }: Props) {
                         color: theme.palette.primary.main,
                       }}
                     >
-                      Draw (X)
+                      {t("betting.home")}
                     </TableCell>
                     <TableCell
                       align="center"
@@ -854,7 +856,16 @@ function BetPageContent({ tournamentId }: Props) {
                         color: theme.palette.primary.main,
                       }}
                     >
-                      Away (2)
+                      {t("betting.draw")}
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      sx={{
+                        fontWeight: 600,
+                        color: theme.palette.primary.main,
+                      }}
+                    >
+                      {t("betting.away")}
                     </TableCell>
                     <TableCell
                       sx={{
@@ -862,7 +873,7 @@ function BetPageContent({ tournamentId }: Props) {
                         color: theme.palette.primary.main,
                       }}
                     >
-                      Selected
+                      {t("betting.selected")}
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -1012,7 +1023,7 @@ function BetPageContent({ tournamentId }: Props) {
                   color: theme.palette.primary.main,
                 }}
               >
-                Bet Summary
+                {t("betting.betSummary")}
               </Typography>
 
               <Box mb={isMobile ? 1.5 : 2}>
@@ -1023,8 +1034,8 @@ function BetPageContent({ tournamentId }: Props) {
                     color: theme.palette.text.primary,
                   }}
                 >
-                  Completed Matches: {calculateBet.validSelections} /{" "}
-                  {matches.length}
+                  {t("betting.completedMatches")} {calculateBet.validSelections}{" "}
+                  / {matches.length}
                 </Typography>
               </Box>
 
@@ -1038,7 +1049,7 @@ function BetPageContent({ tournamentId }: Props) {
                     color: theme.palette.text.primary,
                   }}
                 >
-                  Total Lines:{" "}
+                  {t("betting.totalLines")}{" "}
                   <strong>{calculateBet.totalLines.toLocaleString()}</strong>
                 </Typography>
               </Box>
@@ -1051,7 +1062,8 @@ function BetPageContent({ tournamentId }: Props) {
                     color: theme.palette.text.primary,
                   }}
                 >
-                  Line Price: <strong>${tournament.linePrice}</strong>
+                  {t("betting.linePrice")}{" "}
+                  <strong>${tournament.linePrice}</strong>
                 </Typography>
               </Box>
 
@@ -1064,7 +1076,7 @@ function BetPageContent({ tournamentId }: Props) {
                     fontWeight: 600,
                   }}
                 >
-                  Total Cost:{" "}
+                  {t("betting.totalCost")}{" "}
                   <strong>${calculateBet.totalAmount.toFixed(2)}</strong>
                 </Typography>
               </Box>
@@ -1081,7 +1093,7 @@ function BetPageContent({ tournamentId }: Props) {
                     color: theme.palette.primary.main,
                   }}
                 >
-                  <strong>Prize Structure:</strong>
+                  <strong>{t("betting.prizeStructure")}</strong>
                 </Typography>
                 <Typography
                   variant="body2"
@@ -1090,7 +1102,7 @@ function BetPageContent({ tournamentId }: Props) {
                     color: theme.palette.text.primary,
                   }}
                 >
-                  🥇 Gold (0 wrong): ${tournament.prizeGold || 0}
+                  🥇 {t("betting.goldPrize")} ${tournament.prizeGold || 0}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -1099,7 +1111,7 @@ function BetPageContent({ tournamentId }: Props) {
                     color: theme.palette.text.primary,
                   }}
                 >
-                  🥈 Silver (1 wrong): ${tournament.prizeSilver || 0}
+                  🥈 {t("betting.silverPrize")} ${tournament.prizeSilver || 0}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -1108,7 +1120,7 @@ function BetPageContent({ tournamentId }: Props) {
                     color: theme.palette.text.primary,
                   }}
                 >
-                  🥉 Bronze (2 wrong): ${tournament.prizeBronze || 0}
+                  🥉 {t("betting.bronzePrize")} ${tournament.prizeBronze || 0}
                 </Typography>
               </Box>
 
@@ -1125,29 +1137,31 @@ function BetPageContent({ tournamentId }: Props) {
                 }}
               >
                 {submitting
-                  ? "Placing Bet..."
-                  : `Place Bet - $${calculateBet.totalAmount.toFixed(2)}`}
+                  ? t("betting.placingBet")
+                  : `${t("betting.placeBet")} - $${calculateBet.totalAmount.toFixed(2)}`}
               </Button>
 
-              {!calculateBet.isValid && calculateBet?.validSelections > 0 && (
-                <Typography
-                  variant="body2"
-                  color="error"
-                  sx={{
-                    mt: 1,
-                    fontSize: isMobile ? "0.8rem" : undefined,
-                    lineHeight: isMobile ? 1.3 : undefined,
-                  }}
-                >
-                  {calculateBet?.validSelections < matches.length
-                    ? "Please complete all matches"
-                    : calculateBet.totalLines > (tournament.maxLines || 10000)
-                      ? "Too many lines selected"
-                      : calculateBet.totalLines < (tournament.minLines || 1)
-                        ? "Not enough lines selected"
-                        : "Invalid selection"}
-                </Typography>
-              )}
+              {!calculateBet.isValid &&
+                calculateBet?.validSelections &&
+                calculateBet.validSelections > 0 && (
+                  <Typography
+                    variant="body2"
+                    color="error"
+                    sx={{
+                      mt: 1,
+                      fontSize: isMobile ? "0.8rem" : undefined,
+                      lineHeight: isMobile ? 1.3 : undefined,
+                    }}
+                  >
+                    {calculateBet?.validSelections < matches.length
+                      ? t("betting.pleaseCompleteAll")
+                      : calculateBet.totalLines > (tournament.maxLines || 10000)
+                        ? t("betting.tooManyLines")
+                        : calculateBet.totalLines < (tournament.minLines || 1)
+                          ? t("betting.notEnoughLines")
+                          : t("betting.invalidSelection")}
+                  </Typography>
+                )}
             </CardContent>
           </Card>
         </Grid>

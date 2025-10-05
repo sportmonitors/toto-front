@@ -36,6 +36,9 @@ import {
   Visibility as ViewIcon,
   Sports as SportsIcon,
 } from "@mui/icons-material";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import {
   Match,
   MatchStatus,
@@ -52,12 +55,14 @@ import {
 import withPageRequiredAuth from "@/services/auth/with-page-required-auth";
 import { RoleEnum } from "@/services/api/types/role";
 import { useSnackbar } from "@/hooks/use-snackbar";
+import { useTranslation } from "react-i18next";
 
 const TournamentMatchesPageContent = () => {
   const params = useParams();
   const router = useRouter();
   const tournamentId = params.id as string;
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation("tournaments");
 
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [matches, setMatches] = useState<Match[]>([]);
@@ -120,13 +125,13 @@ const TournamentMatchesPageContent = () => {
   const getStatusLabel = (status: MatchStatus) => {
     switch (status) {
       case MatchStatus.SCHEDULED:
-        return "Scheduled";
+        return t("matches.statusLabels.scheduled");
       case MatchStatus.LIVE:
-        return "Live";
+        return t("matches.statusLabels.live");
       case MatchStatus.FINISHED:
-        return "Finished";
+        return t("matches.statusLabels.finished");
       case MatchStatus.CANCELLED:
-        return "Cancelled";
+        return t("matches.statusLabels.cancelled");
       default:
         return status;
     }
@@ -135,13 +140,13 @@ const TournamentMatchesPageContent = () => {
   const getResultLabel = (result: MatchResult) => {
     switch (result) {
       case MatchResult.HOME:
-        return "Home Win";
+        return t("matches.resultLabels.homeWin");
       case MatchResult.DRAW:
-        return "Draw";
+        return t("matches.resultLabels.draw");
       case MatchResult.AWAY:
-        return "Away Win";
+        return t("matches.resultLabels.awayWin");
       default:
-        return "Not Set";
+        return t("matches.resultLabels.notSet");
     }
   };
 
@@ -233,290 +238,312 @@ const TournamentMatchesPageContent = () => {
   }
 
   return (
-    <Box p={3}>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={3}
-      >
-        <Box>
-          <Typography variant="h4" component="h1">
-            Tournament Matches
-          </Typography>
-          {tournament && (
-            <Typography variant="subtitle1" color="textSecondary">
-              {tournament.name}
-            </Typography>
-          )}
-        </Box>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setCreateDialogOpen(true)}
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <Box p={3}>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={3}
         >
-          Add Match
-        </Button>
-      </Box>
+          <Box>
+            <Typography variant="h4" component="h1">
+              {t("matches.title")}
+            </Typography>
+            {tournament && (
+              <Typography variant="subtitle1" color="textSecondary">
+                {tournament.name}
+              </Typography>
+            )}
+          </Box>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setCreateDialogOpen(true)}
+          >
+            {t("matches.addMatch")}
+          </Button>
+        </Box>
 
-      <Card>
-        <CardContent>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Order</TableCell>
-                  <TableCell>Teams</TableCell>
-                  <TableCell>Sport</TableCell>
-                  <TableCell>Start Time</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Result</TableCell>
-                  <TableCell>Score</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {matches.map((match) => (
-                  <TableRow key={match.id}>
-                    <TableCell>{match.matchOrder}</TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
-                        {match.homeTeam} vs {match.awayTeam}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={match.sportType}
-                        size="small"
-                        icon={<SportsIcon />}
-                      />
-                    </TableCell>
-                    <TableCell>{formatDate(match.startsAt)}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={getStatusLabel(match.status)}
-                        color={getStatusColor(match.status) as any}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      {match.result ? getResultLabel(match.result) : "-"}
-                    </TableCell>
-                    <TableCell>
-                      {match.homeScore !== null && match.awayScore !== null
-                        ? `${match.homeScore} - ${match.awayScore}`
-                        : "-"}
-                    </TableCell>
-                    <TableCell>
-                      <IconButton
-                        size="small"
-                        onClick={() => openEditDialog(match)}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        onClick={() =>
-                          router.push(`/admin-panel/matches/${match.id}`)
-                        }
-                      >
-                        <ViewIcon />
-                      </IconButton>
-                    </TableCell>
+        <Card>
+          <CardContent>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>{t("matches.order")}</TableCell>
+                    <TableCell>{t("matches.teams")}</TableCell>
+                    <TableCell>{t("matches.sport")}</TableCell>
+                    <TableCell>{t("matches.startTime")}</TableCell>
+                    <TableCell>{t("matches.status")}</TableCell>
+                    <TableCell>{t("matches.result")}</TableCell>
+                    <TableCell>{t("matches.score")}</TableCell>
+                    <TableCell>{t("matches.actions")}</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </CardContent>
-      </Card>
+                </TableHead>
+                <TableBody>
+                  {matches.map((match) => (
+                    <TableRow key={match.id}>
+                      <TableCell>{match.matchOrder}</TableCell>
+                      <TableCell>
+                        <Typography variant="body2">
+                          {match.homeTeam} vs {match.awayTeam}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={match.sportType}
+                          size="small"
+                          icon={<SportsIcon />}
+                        />
+                      </TableCell>
+                      <TableCell>{formatDate(match.startsAt)}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={getStatusLabel(match.status)}
+                          color={getStatusColor(match.status) as any}
+                          size="small"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        {match.result ? getResultLabel(match.result) : "-"}
+                      </TableCell>
+                      <TableCell>
+                        {match.homeScore !== null && match.awayScore !== null
+                          ? `${match.homeScore} - ${match.awayScore}`
+                          : "-"}
+                      </TableCell>
+                      <TableCell>
+                        <IconButton
+                          size="small"
+                          onClick={() => openEditDialog(match)}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton
+                          size="small"
+                          onClick={() =>
+                            router.push(`/admin-panel/matches/${match.id}`)
+                          }
+                        >
+                          <ViewIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </CardContent>
+        </Card>
 
-      {/* Create Match Dialog */}
-      <Dialog
-        open={createDialogOpen}
-        onClose={() => setCreateDialogOpen(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Create New Match</DialogTitle>
-        <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Home Team"
-                value={formData.homeTeam}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, homeTeam: e.target.value }))
-                }
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Away Team"
-                value={formData.awayTeam}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, awayTeam: e.target.value }))
-                }
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Match Order"
-                type="number"
-                value={formData.matchOrder}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    matchOrder: parseInt(e.target.value),
-                  }))
-                }
-                inputProps={{ min: 1 }}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>Sport Type</InputLabel>
-                <Select
-                  value={formData.sportType}
+        {/* Create Match Dialog */}
+        <Dialog
+          open={createDialogOpen}
+          onClose={() => setCreateDialogOpen(false)}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>{t("matches.createNewMatch")}</DialogTitle>
+          <DialogContent>
+            <Grid container spacing={2} sx={{ mt: 1 }}>
+              <Grid item size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                  label={t("matches.homeTeam")}
+                  value={formData.homeTeam}
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      sportType: e.target.value as SportType,
+                      homeTeam: e.target.value,
                     }))
                   }
-                  label="Sport Type"
-                >
-                  <MenuItem value={SportType.FOOTBALL}>Football</MenuItem>
-                  <MenuItem value={SportType.BASKETBALL}>Basketball</MenuItem>
-                  <MenuItem value={SportType.VOLLEYBALL}>Volleyball</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Start Time"
-                type="datetime-local"
-                value={formData.startsAt.toISOString().slice(0, 16)}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    startsAt: new Date(e.target.value),
-                  }))
-                }
-                InputLabelProps={{ shrink: true }}
-                required
-              />
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setCreateDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleCreateMatch} variant="contained">
-            Create Match
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Edit Match Dialog */}
-      <Dialog
-        open={editDialogOpen}
-        onClose={() => setEditDialogOpen(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Edit Match</DialogTitle>
-        <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Home Team"
-                value={formData.homeTeam}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, homeTeam: e.target.value }))
-                }
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Away Team"
-                value={formData.awayTeam}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, awayTeam: e.target.value }))
-                }
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Match Order"
-                type="number"
-                value={formData.matchOrder}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    matchOrder: parseInt(e.target.value),
-                  }))
-                }
-                inputProps={{ min: 1 }}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>Sport Type</InputLabel>
-                <Select
-                  value={formData.sportType}
+                  required
+                />
+              </Grid>
+              <Grid item size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                  label={t("matches.awayTeam")}
+                  value={formData.awayTeam}
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      sportType: e.target.value as SportType,
+                      awayTeam: e.target.value,
                     }))
                   }
-                  label="Sport Type"
-                >
-                  <MenuItem value={SportType.FOOTBALL}>Football</MenuItem>
-                  <MenuItem value={SportType.BASKETBALL}>Basketball</MenuItem>
-                  <MenuItem value={SportType.VOLLEYBALL}>Volleyball</MenuItem>
-                </Select>
-              </FormControl>
+                  required
+                />
+              </Grid>
+              <Grid item size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                  label={t("matches.matchOrder")}
+                  type="number"
+                  value={formData.matchOrder}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      matchOrder: parseInt(e.target.value),
+                    }))
+                  }
+                  inputProps={{ min: 1 }}
+                  required
+                />
+              </Grid>
+              <Grid item size={{ xs: 12, sm: 6 }}>
+                <FormControl fullWidth>
+                  <InputLabel>{t("matches.sportType")}</InputLabel>
+                  <Select
+                    value={formData.sportType}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        sportType: e.target.value as SportType,
+                      }))
+                    }
+                    label={t("matches.sportType")}
+                  >
+                    <MenuItem value={SportType.FOOTBALL}>Football</MenuItem>
+                    <MenuItem value={SportType.BASKETBALL}>Basketball</MenuItem>
+                    <MenuItem value={SportType.VOLLEYBALL}>Volleyball</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item size={{ xs: 12 }}>
+                <DateTimePicker
+                  label={t("matches.startTime")}
+                  value={formData.startsAt}
+                  onChange={(newValue) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      startsAt: newValue || new Date(),
+                    }))
+                  }
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      required: true,
+                    },
+                  }}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Start Time"
-                type="datetime-local"
-                value={formData.startsAt.toISOString().slice(0, 16)}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    startsAt: new Date(e.target.value),
-                  }))
-                }
-                InputLabelProps={{ shrink: true }}
-                required
-              />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setCreateDialogOpen(false)}>
+              {t("matches.cancel")}
+            </Button>
+            <Button onClick={handleCreateMatch} variant="contained">
+              {t("matches.create")}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Edit Match Dialog */}
+        <Dialog
+          open={editDialogOpen}
+          onClose={() => setEditDialogOpen(false)}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>{t("matches.editMatch")}</DialogTitle>
+          <DialogContent>
+            <Grid container spacing={2} sx={{ mt: 1 }}>
+              <Grid item size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                  label={t("matches.homeTeam")}
+                  value={formData.homeTeam}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      homeTeam: e.target.value,
+                    }))
+                  }
+                  required
+                />
+              </Grid>
+              <Grid item size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                  label={t("matches.awayTeam")}
+                  value={formData.awayTeam}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      awayTeam: e.target.value,
+                    }))
+                  }
+                  required
+                />
+              </Grid>
+              <Grid item size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                  label={t("matches.matchOrder")}
+                  type="number"
+                  value={formData.matchOrder}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      matchOrder: parseInt(e.target.value),
+                    }))
+                  }
+                  inputProps={{ min: 1 }}
+                  required
+                />
+              </Grid>
+              <Grid item size={{ xs: 12, sm: 6 }}>
+                <FormControl fullWidth>
+                  <InputLabel>{t("matches.sportType")}</InputLabel>
+                  <Select
+                    value={formData.sportType}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        sportType: e.target.value as SportType,
+                      }))
+                    }
+                    label={t("matches.sportType")}
+                  >
+                    <MenuItem value={SportType.FOOTBALL}>Football</MenuItem>
+                    <MenuItem value={SportType.BASKETBALL}>Basketball</MenuItem>
+                    <MenuItem value={SportType.VOLLEYBALL}>Volleyball</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item size={{ xs: 12 }}>
+                <DateTimePicker
+                  label={t("matches.startTime")}
+                  value={formData.startsAt}
+                  onChange={(newValue) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      startsAt: newValue || new Date(),
+                    }))
+                  }
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      required: true,
+                    },
+                  }}
+                />
+              </Grid>
             </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleUpdateMatch} variant="contained">
-            Update Match
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setEditDialogOpen(false)}>
+              {t("matches.cancel")}
+            </Button>
+            <Button onClick={handleUpdateMatch} variant="contained">
+              {t("matches.update")}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
+    </LocalizationProvider>
   );
 };
 

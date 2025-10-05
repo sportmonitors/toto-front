@@ -1,1 +1,106 @@
 /* Your global CSS here */
+
+/* Font Variables */
+:root {
+  --font-inter: "Inter", sans-serif;
+  --font-roboto: "Roboto", sans-serif;
+  --font-vazir: "Vazir", sans-serif;
+}
+
+/* Persian Font Styling */
+[lang="fa"] {
+  font-family:
+    "Vazir",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif !important;
+  direction: rtl;
+  text-align: right;
+}
+
+[lang="fa"] * {
+  font-family:
+    "Vazir",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif !important;
+  direction: rtl;
+}
+
+/* Ensure proper Persian number rendering */
+[lang="fa"] .MuiTypography-root,
+[lang="fa"] .MuiButton-root,
+[lang="fa"] .MuiTextField-root,
+[lang="fa"] .MuiInputBase-root {
+  font-family:
+    "Vazir",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif !important;
+}
+
+/* RTL Layout adjustments for Persian */
+[lang="fa"] .MuiGrid-root {
+  direction: rtl;
+}
+
+[lang="fa"] .MuiCard-root {
+  text-align: right;
+}
+
+[lang="fa"] .MuiTable-root {
+  direction: rtl;
+}
+
+[lang="fa"] .MuiTableCell-root {
+  text-align: right;
+}
+
+/* English Font Styling */
+[lang="en"] {
+  font-family:
+    "Inter",
+    "Roboto",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  direction: ltr;
+  text-align: left;
+}
+
+/* Font loading optimization */
+.font-vazir {
+  font-family:
+    "Vazir",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+}
+
+.font-inter {
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+}
+
+.font-roboto {
+  font-family:
+    "Roboto",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}

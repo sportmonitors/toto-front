@@ -8,7 +8,7 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import Grid from "@mui/material/Grid";
+import { Grid } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
@@ -173,14 +173,14 @@ const TournamentEditPageContent = () => {
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
             {/* Basic Information */}
-            <Grid item xs={12}>
+            <Grid item size={{ xs: 12 }}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
                     Basic Information
                   </Typography>
                   <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item size={{ xs: 12, sm: 6 }}>
                       <TextField
                         fullWidth
                         label="Tournament Name"
@@ -191,7 +191,7 @@ const TournamentEditPageContent = () => {
                         required
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item size={{ xs: 12, sm: 6 }}>
                       <FormControl fullWidth>
                         <InputLabel>Status</InputLabel>
                         <Select
@@ -216,7 +216,7 @@ const TournamentEditPageContent = () => {
                         </Select>
                       </FormControl>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item size={{ xs: 12 }}>
                       <TextField
                         fullWidth
                         label="Description"
@@ -234,14 +234,14 @@ const TournamentEditPageContent = () => {
             </Grid>
 
             {/* Schedule */}
-            <Grid item xs={12}>
+            <Grid item size={{ xs: 12 }}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
                     Schedule
                   </Typography>
                   <Grid container spacing={2}>
-                    <Grid item xs={12} sm={4}>
+                    <Grid item size={{ xs: 12, sm: 4 }}>
                       <DateTimePicker
                         label="Start Date"
                         value={formData.startDate}
@@ -251,7 +251,7 @@ const TournamentEditPageContent = () => {
                         slotProps={{ textField: { fullWidth: true } }}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid item size={{ xs: 12, sm: 4 }}>
                       <DateTimePicker
                         label="End Date"
                         value={formData.endDate}
@@ -259,7 +259,7 @@ const TournamentEditPageContent = () => {
                         slotProps={{ textField: { fullWidth: true } }}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid item size={{ xs: 12, sm: 4 }}>
                       <DateTimePicker
                         label="Betting Cutoff"
                         value={formData.cutoffTime}
@@ -275,14 +275,14 @@ const TournamentEditPageContent = () => {
             </Grid>
 
             {/* Tournament Settings */}
-            <Grid item xs={12} md={6}>
+            <Grid item size={{ xs: 12, md: 6 }}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
                     Tournament Settings
                   </Typography>
                   <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                    <Grid item size={{ xs: 12 }}>
                       <TextField
                         fullWidth
                         label="Line Price"
@@ -297,7 +297,7 @@ const TournamentEditPageContent = () => {
                         inputProps={{ step: 0.01, min: 0 }}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item size={{ xs: 12, sm: 6 }}>
                       <TextField
                         fullWidth
                         label="Min Lines"
@@ -312,7 +312,7 @@ const TournamentEditPageContent = () => {
                         inputProps={{ min: 1 }}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item size={{ xs: 12, sm: 6 }}>
                       <TextField
                         fullWidth
                         label="Max Lines"
@@ -327,7 +327,7 @@ const TournamentEditPageContent = () => {
                         inputProps={{ min: 1 }}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item size={{ xs: 12, sm: 6 }}>
                       <TextField
                         fullWidth
                         label="Max Participants"
@@ -343,7 +343,7 @@ const TournamentEditPageContent = () => {
                         helperText="0 = Unlimited"
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item size={{ xs: 12, sm: 6 }}>
                       <TextField
                         fullWidth
                         label="Min Valid Matches"
@@ -364,14 +364,14 @@ const TournamentEditPageContent = () => {
             </Grid>
 
             {/* Prize Settings */}
-            <Grid item xs={12} md={6}>
+            <Grid item size={{ xs: 12, md: 6 }}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
                     Prize Settings
                   </Typography>
                   <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                    <Grid item size={{ xs: 12 }}>
                       <FormControl fullWidth>
                         <InputLabel>Prize Distribution Type</InputLabel>
                         <Select
@@ -397,7 +397,7 @@ const TournamentEditPageContent = () => {
                     {formData.prizeDistributionType ===
                     PrizeDistributionType.FIXED ? (
                       <>
-                        <Grid item xs={12}>
+                        <Grid item size={{ xs: 12 }}>
                           <TextField
                             fullWidth
                             label="Gold Prize"
@@ -412,7 +412,7 @@ const TournamentEditPageContent = () => {
                             inputProps={{ step: 0.01, min: 0 }}
                           />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item size={{ xs: 12 }}>
                           <TextField
                             fullWidth
                             label="Silver Prize"
@@ -427,7 +427,7 @@ const TournamentEditPageContent = () => {
                             inputProps={{ step: 0.01, min: 0 }}
                           />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item size={{ xs: 12 }}>
                           <TextField
                             fullWidth
                             label="Bronze Prize"
@@ -445,7 +445,7 @@ const TournamentEditPageContent = () => {
                       </>
                     ) : (
                       <>
-                        <Grid item xs={12}>
+                        <Grid item size={{ xs: 12 }}>
                           <TextField
                             fullWidth
                             label="Gold Percentage"
@@ -461,7 +461,7 @@ const TournamentEditPageContent = () => {
                             helperText="Percentage of total bet amount"
                           />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item size={{ xs: 12 }}>
                           <TextField
                             fullWidth
                             label="Silver Percentage"
@@ -477,7 +477,7 @@ const TournamentEditPageContent = () => {
                             helperText="Percentage of total bet amount"
                           />
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item size={{ xs: 12 }}>
                           <TextField
                             fullWidth
                             label="Bronze Percentage"
@@ -501,14 +501,14 @@ const TournamentEditPageContent = () => {
             </Grid>
 
             {/* Visual Settings */}
-            <Grid item xs={12}>
+            <Grid item size={{ xs: 12 }}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
                     Visual Settings
                   </Typography>
                   <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item size={{ xs: 12, sm: 6 }}>
                       <TextField
                         fullWidth
                         label="Background Image URL"
@@ -518,7 +518,7 @@ const TournamentEditPageContent = () => {
                         }
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item size={{ xs: 12, sm: 6 }}>
                       <TextField
                         fullWidth
                         label="Background Color"
@@ -535,7 +535,7 @@ const TournamentEditPageContent = () => {
             </Grid>
 
             {/* Actions */}
-            <Grid item xs={12}>
+            <Grid item size={{ xs: 12 }}>
               <Box display="flex" gap={2}>
                 <Button type="submit" variant="contained" disabled={saving}>
                   {saving ? "Saving..." : "Update Tournament"}

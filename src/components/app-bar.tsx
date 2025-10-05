@@ -20,6 +20,7 @@ import Link from "@/components/link";
 import { RoleEnum } from "@/services/api/types/role";
 import Divider from "@mui/material/Divider";
 import ThemeSwitchButton from "@/components/switch-theme-button";
+import LanguageSwitcher from "@/components/language-switcher";
 import { IS_SIGN_UP_ENABLED } from "@/services/auth/config";
 import { useTheme } from "@mui/material/styles";
 import { usePathname } from "next/navigation";
@@ -282,8 +283,11 @@ function ResponsiveAppBar() {
             sx={{
               display: "flex",
               mr: 1,
+              alignItems: "center",
+              gap: 1,
             }}
           >
+            <LanguageSwitcher />
             <ThemeSwitchButton />
           </Box>
 

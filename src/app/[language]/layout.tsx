@@ -1,10 +1,6 @@
 import ResponsiveAppBar from "@/components/app-bar";
 import AuthProvider from "@/services/auth/auth-provider";
 import "../globals.css";
-import "@fontsource/roboto/300.css";
-import "@fontsource/roboto/400.css";
-import "@fontsource/roboto/500.css";
-import "@fontsource/roboto/700.css";
 import CssBaseline from "@mui/material/CssBaseline";
 import { dir } from "i18next";
 import "@/services/i18n/config";
@@ -22,6 +18,7 @@ import GoogleAuthProvider from "@/services/social-auth/google/google-auth-provid
 import FacebookAuthProvider from "@/services/social-auth/facebook/facebook-auth-provider";
 import ConfirmDialogProvider from "@/components/confirm-dialog/confirm-dialog-provider";
 import InitColorSchemeScript from "@/components/theme/init-color-scheme-script";
+import { inter, roboto, vazir } from "@/lib/fonts";
 
 type Props = {
   params: Promise<{ language: string }>;
@@ -52,7 +49,13 @@ export default async function RootLayout(props: {
 
   return (
     <html lang={language} dir={dir(language)} suppressHydrationWarning>
-      <body suppressHydrationWarning>
+      <head>
+        <style dangerouslySetInnerHTML={{ __html: vazir.css }} />
+      </head>
+      <body
+        suppressHydrationWarning
+        className={`${inter.variable} ${roboto.variable} ${language === "fa" ? vazir.className : ""}`}
+      >
         <InitColorSchemeScript />
         <QueryClientProvider client={queryClient}>
           <ReactQueryDevtools initialIsOpen={false} />

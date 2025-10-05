@@ -4,6 +4,7 @@ import Link from "@/components/link";
 import { getActiveTournaments } from "@/services/api/services/tournaments";
 import HTTP_CODES_ENUM from "@/services/api/types/http-codes";
 import { Tournament } from "@/services/api/types/tournament";
+import { useTranslation } from "@/services/i18n/client";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import Box from "@mui/material/Box";
@@ -21,6 +22,7 @@ import { format, isAfter } from "date-fns";
 import { useEffect, useState } from "react";
 
 function TournamentsUser() {
+  const { t } = useTranslation("tournaments");
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
@@ -100,7 +102,7 @@ function TournamentsUser() {
             variant={isMobile ? "body1" : "h6"}
             sx={{ color: theme.palette.text.primary }}
           >
-            Loading tournaments...
+            {t("loading")}
           </Typography>
         </Box>
       </Container>
@@ -175,7 +177,7 @@ function TournamentsUser() {
                       >
                         <AccessTimeIcon sx={{ mr: 0.5, fontSize: "1rem" }} />
                         <Typography variant="caption" fontWeight={600}>
-                          Time Remaining
+                          {t("timeRemaining")}
                         </Typography>
                       </Box>
                       <Box display="flex" gap={0.5} justifyContent="center">
@@ -199,7 +201,7 @@ function TournamentsUser() {
                             variant="caption"
                             sx={{ fontSize: "0.7rem" }}
                           >
-                            days
+                            {t("days")}
                           </Typography>
                         </Box>
                         <Box
@@ -223,7 +225,7 @@ function TournamentsUser() {
                             variant="caption"
                             sx={{ fontSize: "0.7rem" }}
                           >
-                            hours
+                            {t("hours")}
                           </Typography>
                         </Box>
                         <Box
@@ -247,7 +249,7 @@ function TournamentsUser() {
                             variant="caption"
                             sx={{ fontSize: "0.7rem" }}
                           >
-                            minutes
+                            {t("minutes")}
                           </Typography>
                         </Box>
                         <Box
@@ -271,7 +273,7 @@ function TournamentsUser() {
                             variant="caption"
                             sx={{ fontSize: "0.7rem" }}
                           >
-                            seconds
+                            {t("seconds")}
                           </Typography>
                         </Box>
                       </Box>
@@ -300,7 +302,7 @@ function TournamentsUser() {
                         }}
                       >
                         <Chip
-                          label={canBet(tournament) ? "Active" : "Closed"}
+                          label={canBet(tournament) ? t("active") : t("closed")}
                           color={canBet(tournament) ? "success" : "error"}
                           size="small"
                           sx={{
@@ -362,7 +364,7 @@ function TournamentsUser() {
                           mb={0.5}
                         >
                           <Typography variant="body2" sx={{ color: "#000000" }}>
-                            Start Date:
+                            {t("startDate")}
                           </Typography>
                           <Typography
                             variant="body2"
@@ -381,7 +383,7 @@ function TournamentsUser() {
                           mb={0.5}
                         >
                           <Typography variant="body2" sx={{ color: "#000000" }}>
-                            End Date:
+                            {t("endDate")}
                           </Typography>
                           <Typography
                             variant="body2"
@@ -400,19 +402,19 @@ function TournamentsUser() {
                           mb={0.5}
                         >
                           <Typography variant="body2" sx={{ color: "#000000" }}>
-                            Total Prize:
+                            {t("totalPrize")}
                           </Typography>
                           <Typography
                             variant="body2"
                             fontWeight={600}
                             sx={{ color: theme.palette.text.secondary }}
                           >
-                            {totalPrize.toLocaleString()} Points
+                            {totalPrize.toLocaleString()} {t("points")}
                           </Typography>
                         </Box>
                         <Box display="flex" justifyContent="space-between">
                           <Typography variant="body2" sx={{ color: "#000000" }}>
-                            Max Participants:
+                            {t("maxParticipants")}
                           </Typography>
                           <Typography
                             variant="body2"
@@ -445,7 +447,7 @@ function TournamentsUser() {
                             },
                           }}
                         >
-                          Join Now
+                          {t("joinNow")}
                         </Button>
                       )}
                     </CardActions>
@@ -473,7 +475,7 @@ function TournamentsUser() {
                   color: theme.palette.text.secondary,
                 }}
               >
-                No Active Tournaments
+                {t("noActiveTournaments")}
               </Typography>
               <Typography
                 variant={isMobile ? "body2" : "body1"}
@@ -484,7 +486,7 @@ function TournamentsUser() {
                   color: theme.palette.text.secondary,
                 }}
               >
-                Check back later for new tournaments to join!
+                {t("noActiveTournamentsDescription")}
               </Typography>
             </Box>
           )}

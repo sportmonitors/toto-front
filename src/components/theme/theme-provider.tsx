@@ -18,6 +18,17 @@ function ThemeProvider(props: PropsWithChildren) {
   const theme = useMemo(
     () =>
       createTheme({
+        typography: {
+          fontFamily: [
+            "var(--font-inter)",
+            "var(--font-roboto)",
+            "-apple-system",
+            "BlinkMacSystemFont",
+            '"Segoe UI"',
+            "Roboto",
+            "sans-serif",
+          ].join(","),
+        },
         cssVariables: {
           colorSchemeSelector: "class",
         },
