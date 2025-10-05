@@ -1,26 +1,24 @@
 "use client";
 
-import { useTranslation } from "@/services/i18n/client";
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardActions from "@mui/material/CardActions";
-import Button from "@mui/material/Button";
-import Chip from "@mui/material/Chip";
-import Box from "@mui/material/Box";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { useTheme } from "@mui/material/styles";
 import Link from "@/components/link";
-import { useState, useEffect } from "react";
-import { Tournament } from "@/services/api/types/tournament";
 import { getActiveTournaments } from "@/services/api/services/tournaments";
 import HTTP_CODES_ENUM from "@/services/api/types/http-codes";
-import { format, isAfter } from "date-fns";
+import { Tournament } from "@/services/api/types/tournament";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import EuroIcon from "@mui/icons-material/Euro";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import Chip from "@mui/material/Chip";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+import { useTheme } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { format, isAfter } from "date-fns";
+import { useEffect, useState } from "react";
 
 function TournamentsUser() {
   const theme = useTheme();
@@ -28,9 +26,19 @@ function TournamentsUser() {
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
     loadTournaments();
+  }, []);
+
+  // Update timer every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
   }, []);
 
   const loadTournaments = async () => {
@@ -62,17 +70,14 @@ function TournamentsUser() {
     const cutoff = new Date(cutoffTime);
     const diff = cutoff.getTime() - now.getTime();
 
-    if (diff <= 0) return "Betting Closed";
+    if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
 
-    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-    if (hours > 24) {
-      const days = Math.floor(hours / 24);
-      return `${days}d ${hours % 24}h remaining`;
-    }
-
-    return `${hours}h ${minutes}m remaining`;
+    return { days, hours, minutes, seconds };
   };
 
   if (loading) {
@@ -114,195 +119,340 @@ function TournamentsUser() {
       <Grid container spacing={isMobile ? 2 : 3} pt={isMobile ? 2 : 3}>
         <Grid size={{ xs: 12 }}>
           <Grid container spacing={isMobile ? 2 : 3}>
-            {tournaments.map((tournament) => (
-              <Grid
-                size={{
-                  xs: 12,
-                  sm: 6,
-                  md: 6,
-                  lg: 4,
-                  xl: 3,
-                }}
-                key={tournament.id}
-              >
-                <Card
-                  sx={{
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    backgroundColor: "#ffffff",
-                    borderRadius: isMobile ? 2 : 3,
-                    boxShadow: isMobile ? 1 : 2,
-                    transition: "all 0.2s ease-in-out",
-                    "&:hover": {
-                      transform: isMobile ? "none" : "translateY(-2px)",
-                      boxShadow: isMobile ? 1 : 4,
-                    },
+            {tournaments.map((tournament) => {
+              const timeRemaining = getTimeRemaining(tournament.cutoffTime);
+              const totalPrize =
+                (tournament.prizeGold || 0) +
+                (tournament.prizeSilver || 0) +
+                (tournament.prizeBronze || 0);
+              const gamesCompleted = Math.floor(Math.random() * 8) + 1; // Mock data - replace with actual data
+              const totalGames = 8; // Mock data - replace with actual data
+
+              return (
+                <Grid
+                  size={{
+                    xs: 12,
+                    sm: 6,
+                    md: 6,
+                    lg: 4,
+                    xl: 3,
                   }}
+                  key={tournament.id}
                 >
-                  {tournament.backgroundImage && (
+                  <Card
+                    sx={{
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      backgroundColor: "#ffffff",
+                      borderRadius: 3,
+                      boxShadow: "none",
+                      transition: "all 0.2s ease-in-out",
+                      overflow: "hidden",
+                      "&:hover": {
+                        transform: "translateY(-4px)",
+                        boxShadow: 6,
+                      },
+                    }}
+                  >
+                    {/* Timer Section */}
                     <Box
                       sx={{
-                        height: isMobile ? 100 : 120,
-                        backgroundImage: `url(${tournament.backgroundImage})`,
+                        backgroundColor: "#fef2f2",
+                        margin: "10px",
+                        color: "#dc2626",
+                        px: 2.5,
+                        py: 1.5,
+                        borderRadius: 2,
+                        textAlign: "center",
+                      }}
+                    >
+                      <Box
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        mb={0.5}
+                      >
+                        <AccessTimeIcon sx={{ mr: 0.5, fontSize: "1rem" }} />
+                        <Typography variant="caption" fontWeight={600}>
+                          Time Remaining
+                        </Typography>
+                      </Box>
+                      <Box display="flex" gap={0.5} justifyContent="center">
+                        <Box
+                          sx={{
+                            backgroundColor: "rgba(220, 38, 38, 0.1)",
+                            borderRadius: 1,
+                            p: 0.5,
+                            minWidth: "40px",
+                            textAlign: "center",
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 0.25,
+                          }}
+                        >
+                          <Typography variant="body2" fontWeight={700}>
+                            {timeRemaining.days}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{ fontSize: "0.7rem" }}
+                          >
+                            days
+                          </Typography>
+                        </Box>
+                        <Box
+                          sx={{
+                            backgroundColor: "rgba(220, 38, 38, 0.1)",
+                            borderRadius: 1,
+                            p: 0.5,
+                            minWidth: "40px",
+                            textAlign: "center",
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 0.25,
+                            border: "1px solid rgba(220, 38, 38, 0.2)",
+                          }}
+                        >
+                          <Typography variant="body2" fontWeight={700}>
+                            {timeRemaining.hours.toString().padStart(2, "0")}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{ fontSize: "0.7rem" }}
+                          >
+                            hours
+                          </Typography>
+                        </Box>
+                        <Box
+                          sx={{
+                            backgroundColor: "rgba(220, 38, 38, 0.1)",
+                            borderRadius: 1,
+                            p: 0.5,
+                            minWidth: "40px",
+                            textAlign: "center",
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 0.25,
+                            border: "1px solid rgba(220, 38, 38, 0.2)",
+                          }}
+                        >
+                          <Typography variant="body2" fontWeight={700}>
+                            {timeRemaining.minutes.toString().padStart(2, "0")}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{ fontSize: "0.7rem" }}
+                          >
+                            minutes
+                          </Typography>
+                        </Box>
+                        <Box
+                          sx={{
+                            backgroundColor: "rgba(220, 38, 38, 0.1)",
+                            borderRadius: 1,
+                            p: 0.5,
+                            minWidth: "40px",
+                            textAlign: "center",
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 0.25,
+                            border: "1px solid rgba(220, 38, 38, 0.2)",
+                          }}
+                        >
+                          <Typography variant="body2" fontWeight={700}>
+                            {timeRemaining.seconds.toString().padStart(2, "0")}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{ fontSize: "0.7rem" }}
+                          >
+                            seconds
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Box>
+
+                    {/* Background Image Section */}
+                    <Box
+                      sx={{
+                        height: 160,
+                        backgroundImage: tournament.backgroundImage
+                          ? `url(${tournament.backgroundImage})`
+                          : "linear-gradient(135deg, #667eea 0%, #000 100%)",
                         backgroundSize: "cover",
                         backgroundPosition: "center",
+                        position: "relative",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
-                    />
-                  )}
-
-                  <CardContent sx={{ flexGrow: 1, p: isMobile ? 2 : 3 }}>
-                    <Box
-                      display="flex"
-                      justifyContent="space-between"
-                      alignItems="start"
-                      mb={isMobile ? 1.5 : 2}
-                      flexDirection={isMobile ? "column" : "row"}
-                      gap={isMobile ? 1 : 0}
                     >
-                      <Typography
-                        variant={isMobile ? "subtitle1" : "h6"}
-                        component="h2"
+                      <Box
                         sx={{
-                          fontSize: isMobile ? "1rem" : undefined,
-                          fontWeight: 600,
-                          lineHeight: 1.2,
-                          color: theme.palette.text.primary,
+                          position: "absolute",
+                          top: 8,
+                          right: 8,
+                        }}
+                      >
+                        <Chip
+                          label={canBet(tournament) ? "Active" : "Closed"}
+                          color={canBet(tournament) ? "success" : "error"}
+                          size="small"
+                          sx={{
+                            backgroundColor: canBet(tournament)
+                              ? "#4caf50"
+                              : "#f44336",
+                            color: "white",
+                            fontWeight: 600,
+                          }}
+                        />
+                      </Box>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          color: "white",
+                          fontWeight: 700,
+                          textShadow: "2px 2px 4px rgba(0,0,0,0.5)",
+                          textAlign: "center",
+                          fontSize: "1.1rem",
                         }}
                       >
                         {tournament.name}
                       </Typography>
-                      <Chip
-                        label={canBet(tournament) ? "Open" : "Closed"}
-                        color={canBet(tournament) ? "success" : "error"}
-                        size={isMobile ? "small" : "medium"}
-                        sx={{
-                          fontSize: isMobile ? "0.75rem" : undefined,
-                          height: isMobile ? 24 : undefined,
-                        }}
-                      />
                     </Box>
 
-                    {tournament.description && (
+                    <CardContent sx={{ flexGrow: 1, p: 2 }}>
+                      {/* Title */}
                       <Typography
-                        variant="body2"
-                        mb={isMobile ? 1.5 : 2}
+                        variant="h6"
+                        component="h2"
                         sx={{
-                          fontSize: isMobile ? "0.8rem" : undefined,
-                          lineHeight: isMobile ? 1.3 : undefined,
-                          color: theme.palette.text.secondary,
+                          fontWeight: 700,
+                          color: theme.palette.primary.main,
+                          mb: 1,
                         }}
                       >
-                        {tournament.description}
+                        {tournament.name}
                       </Typography>
-                    )}
 
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      mb={isMobile ? 0.75 : 1}
-                    >
-                      <AccessTimeIcon
-                        fontSize={isMobile ? "small" : "medium"}
-                        sx={{ mr: 1, fontSize: isMobile ? "1rem" : undefined }}
-                      />
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontSize: isMobile ? "0.8rem" : undefined,
-                          color: theme.palette.text.primary,
-                        }}
-                      >
-                        {getTimeRemaining(tournament.cutoffTime)}
-                      </Typography>
-                    </Box>
+                      {/* Description */}
+                      {tournament.description && (
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: theme.palette.text.secondary,
+                            mb: 2,
+                            lineHeight: 1.4,
+                          }}
+                        >
+                          {tournament.description}
+                        </Typography>
+                      )}
 
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      mb={isMobile ? 0.75 : 1}
-                    >
-                      <EuroIcon
-                        fontSize={isMobile ? "small" : "medium"}
-                        sx={{ mr: 1, fontSize: isMobile ? "1rem" : undefined }}
-                      />
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontSize: isMobile ? "0.8rem" : undefined,
-                          color: theme.palette.text.primary,
-                        }}
-                      >
-                        ${tournament.linePrice} per line
-                      </Typography>
-                    </Box>
+                      {/* Event Details */}
+                      <Box sx={{ mb: 1 }}>
+                        <Box
+                          display="flex"
+                          justifyContent="space-between"
+                          mb={0.5}
+                        >
+                          <Typography variant="body2" sx={{ color: "#000000" }}>
+                            Start Date:
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            fontWeight={600}
+                            sx={{ color: theme.palette.text.secondary }}
+                          >
+                            {format(
+                              new Date(tournament.startDate),
+                              "MMM dd, yyyy 'at' h:mm a"
+                            )}
+                          </Typography>
+                        </Box>
+                        <Box
+                          display="flex"
+                          justifyContent="space-between"
+                          mb={0.5}
+                        >
+                          <Typography variant="body2" sx={{ color: "#000000" }}>
+                            End Date:
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            fontWeight={600}
+                            sx={{ color: theme.palette.text.secondary }}
+                          >
+                            {format(
+                              new Date(tournament.endDate),
+                              "MMM dd, yyyy 'at' h:mm a"
+                            )}
+                          </Typography>
+                        </Box>
+                        <Box
+                          display="flex"
+                          justifyContent="space-between"
+                          mb={0.5}
+                        >
+                          <Typography variant="body2" sx={{ color: "#000000" }}>
+                            Total Prize:
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            fontWeight={600}
+                            sx={{ color: theme.palette.text.secondary }}
+                          >
+                            {totalPrize.toLocaleString()} Points
+                          </Typography>
+                        </Box>
+                        <Box display="flex" justifyContent="space-between">
+                          <Typography variant="body2" sx={{ color: "#000000" }}>
+                            Max Participants:
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            fontWeight={600}
+                            sx={{ color: theme.palette.text.secondary }}
+                          >
+                            {tournament.maxParticipants?.toLocaleString() ||
+                              "N/A"}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
 
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      mb={isMobile ? 1.5 : 2}
-                    >
-                      <EmojiEventsIcon
-                        fontSize={isMobile ? "small" : "medium"}
-                        sx={{ mr: 1, fontSize: isMobile ? "1rem" : undefined }}
-                      />
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontSize: isMobile ? "0.8rem" : undefined,
-                          color: theme.palette.text.primary,
-                        }}
-                      >
-                        Prizes: ${tournament.prizeGold || 0} | $
-                        {tournament.prizeSilver || 0} | $
-                        {tournament.prizeBronze || 0}
-                      </Typography>
-                    </Box>
-
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontSize: isMobile ? "0.8rem" : undefined,
-                        lineHeight: isMobile ? 1.3 : undefined,
-                        color: theme.palette.text.secondary,
-                      }}
-                    >
-                      Tournament runs from{" "}
-                      {format(new Date(tournament.startDate), "MMM dd")} to{" "}
-                      {format(new Date(tournament.endDate), "MMM dd, yyyy")}
-                    </Typography>
-                  </CardContent>
-
-                  <CardActions sx={{ p: isMobile ? 1.5 : 2, pt: 0 }}>
-                    {/* <Button
-                      size="small"
-                      LinkComponent={Link}
-                      href={`/tournaments/${tournament.id}`}
-                      variant="outlined"
-                      fullWidth
-                    >
-                      View Details
-                    </Button> */}
-                    {canBet(tournament) && (
-                      <Button
-                        size={isMobile ? "small" : "medium"}
-                        LinkComponent={Link}
-                        href={`/tournaments/${tournament.id}/bet`}
-                        variant="contained"
-                        fullWidth
-                        sx={{
-                          fontSize: isMobile ? "0.875rem" : undefined,
-                          py: isMobile ? 1 : undefined,
-                          fontWeight: 600,
-                        }}
-                      >
-                        Place Bet
-                      </Button>
-                    )}
-                  </CardActions>
-                </Card>
-              </Grid>
-            ))}
+                    <CardActions sx={{ p: 2, pt: 0 }}>
+                      {canBet(tournament) && (
+                        <Button
+                          LinkComponent={Link}
+                          href={`/tournaments/${tournament.id}/bet`}
+                          variant="contained"
+                          fullWidth
+                          size="large"
+                          sx={{
+                            backgroundColor: "#093453",
+                            color: "white",
+                            fontWeight: 700,
+                            fontSize: "1rem",
+                            borderRadius: 2,
+                            "&:hover": {
+                              backgroundColor: "#0a3d5f",
+                            },
+                          }}
+                        >
+                          Join Now
+                        </Button>
+                      )}
+                    </CardActions>
+                  </Card>
+                </Grid>
+              );
+            })}
           </Grid>
 
           {tournaments.length === 0 && (

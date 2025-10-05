@@ -7,6 +7,7 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
+import CardHeader from "@mui/material/CardHeader";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
@@ -30,6 +31,9 @@ import { getMatchesByTournament } from "@/services/api/services/matches";
 import { format } from "date-fns";
 import { useSnackbar } from "@/hooks/use-snackbar";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import GroupIcon from "@mui/icons-material/Group";
 import { RoleEnum } from "@/services/api/types/role";
 
 interface BetSelection {
@@ -65,8 +69,6 @@ function BetPageContent({ tournamentId }: Props) {
         getTournament(tournamentId),
         getMatchesByTournament(tournamentId),
       ]);
-      //  console.log("tournamentResponse", tournamentResponse);
-      //  console.log("matchesResponse", matchesResponse);
 
       setTournament(tournamentResponse?.data);
       const matches = matchesResponse?.data || [];
@@ -192,20 +194,35 @@ function BetPageContent({ tournamentId }: Props) {
     new Date() < cutoffDate &&
     tournament.status === "active";
 
-  // Debug logging
-  if (tournament) {
-    const cutoffDate = new Date(tournament.cutoffTime);
-    console.log("Tournament debug:", {
-      status: tournament.status,
-      cutoffTime: tournament.cutoffTime,
-      currentTime: new Date().toISOString(),
-      cutoffTimeDate: isNaN(cutoffDate.getTime())
-        ? "Invalid Date"
-        : cutoffDate.toISOString(),
-      isBeforeCutoff: !isNaN(cutoffDate.getTime()) && new Date() < cutoffDate,
-      canBet: canBet,
-    });
-  }
+  const completedGames = matches.filter(
+    (match) => match.status === "finished"
+  ).length;
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "upcoming":
+        return "primary";
+      case "active":
+        return "success";
+      case "finished":
+        return "default";
+      default:
+        return "default";
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "upcoming":
+        return "Upcoming";
+      case "active":
+        return "Active";
+      case "finished":
+        return "Finished";
+      default:
+        return status;
+    }
+  };
 
   if (loading) {
     return (
@@ -300,105 +317,336 @@ function BetPageContent({ tournamentId }: Props) {
         minHeight: "100vh",
       }}
     >
-      <Grid container spacing={isMobile ? 2 : 3} pt={isMobile ? 2 : 3}>
-        {/* Tournament Header */}
+      <Grid container spacing={isMobile ? 1 : 3} pt={isMobile ? 1 : 3}>
+        {/* Pool Info Cards */}
+        <Grid size={{ xs: 12 }}>
+          <Grid container spacing={isMobile ? 1 : 2}>
+            <Grid size={{ xs: 6, sm: 3 }}>
+              <Card
+                sx={{
+                  backgroundColor: "#ffffff",
+                  borderRadius: 2,
+                  boxShadow: "none",
+                  height: "100%",
+                }}
+              >
+                <CardContent sx={{ p: isMobile ? 1.5 : 2 }}>
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                  >
+                    <Box minWidth={0} flex={1}>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontSize: isMobile ? "0.7rem" : "0.75rem",
+                          fontWeight: 500,
+                          color: theme.palette.text.secondary,
+                        }}
+                      >
+                        Status
+                      </Typography>
+                      <Box mt={0.5}>
+                        <Chip
+                          label={getStatusText(tournament.status)}
+                          color={getStatusColor(tournament.status)}
+                          size="small"
+                          sx={{
+                            fontSize: "0.7rem",
+                            height: 20,
+                          }}
+                        />
+                      </Box>
+                    </Box>
+                    <AccessTimeIcon
+                      sx={{
+                        fontSize: isMobile ? 16 : 20,
+                        color: theme.palette.primary.main,
+                        flexShrink: 0,
+                      }}
+                    />
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid size={{ xs: 6, sm: 3 }}>
+              <Card
+                sx={{
+                  backgroundColor: "#ffffff",
+                  borderRadius: 2,
+                  boxShadow: "none",
+                  height: "100%",
+                }}
+              >
+                <CardContent sx={{ p: isMobile ? 1.5 : 2 }}>
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                  >
+                    <Box minWidth={0} flex={1}>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontSize: isMobile ? "0.7rem" : "0.75rem",
+                          fontWeight: 500,
+                          color: theme.palette.text.secondary,
+                        }}
+                      >
+                        Games Progress
+                      </Typography>
+                      <Typography
+                        variant={isMobile ? "h6" : "h5"}
+                        sx={{
+                          fontSize: isMobile ? "1rem" : "1.25rem",
+                          fontWeight: 700,
+                          color: theme.palette.primary.main,
+                        }}
+                      >
+                        {completedGames}/{matches.length}
+                      </Typography>
+                    </Box>
+                    <GroupIcon
+                      sx={{
+                        fontSize: isMobile ? 16 : 20,
+                        color: theme.palette.primary.main,
+                        flexShrink: 0,
+                      }}
+                    />
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid size={{ xs: 6, sm: 3 }}>
+              <Card
+                sx={{
+                  backgroundColor: "#ffffff",
+                  borderRadius: 2,
+                  boxShadow: "none",
+                  height: "100%",
+                }}
+              >
+                <CardContent sx={{ p: isMobile ? 1.5 : 2 }}>
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                  >
+                    <Box minWidth={0} flex={1}>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontSize: isMobile ? "0.7rem" : "0.75rem",
+                          fontWeight: 500,
+                          color: theme.palette.text.secondary,
+                        }}
+                      >
+                        Your Score
+                      </Typography>
+                      <Typography
+                        variant={isMobile ? "h6" : "h5"}
+                        sx={{
+                          fontSize: isMobile ? "1rem" : "1.25rem",
+                          fontWeight: 700,
+                          color: theme.palette.primary.main,
+                        }}
+                      >
+                        0/{completedGames}
+                      </Typography>
+                    </Box>
+                    <EmojiEventsIcon
+                      sx={{
+                        fontSize: isMobile ? 16 : 20,
+                        color: theme.palette.primary.main,
+                        flexShrink: 0,
+                      }}
+                    />
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid size={{ xs: 6, sm: 3 }}>
+              <Card
+                sx={{
+                  backgroundColor: "#ffffff",
+                  borderRadius: 2,
+                  boxShadow: "none",
+                  height: "100%",
+                }}
+              >
+                <CardContent sx={{ p: isMobile ? 1.5 : 2 }}>
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                  >
+                    <Box minWidth={0} flex={1}>
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontSize: isMobile ? "0.7rem" : "0.75rem",
+                          fontWeight: 500,
+                          color: theme.palette.text.secondary,
+                        }}
+                      >
+                        Participants
+                      </Typography>
+                      <Typography
+                        variant={isMobile ? "h6" : "h5"}
+                        sx={{
+                          fontSize: isMobile ? "1rem" : "1.25rem",
+                          fontWeight: 700,
+                          color: theme.palette.primary.main,
+                        }}
+                      >
+                        {tournament.maxParticipants?.toLocaleString() || "N/A"}
+                      </Typography>
+                    </Box>
+                    <GroupIcon
+                      sx={{
+                        fontSize: isMobile ? 16 : 20,
+                        color: theme.palette.primary.main,
+                        flexShrink: 0,
+                      }}
+                    />
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </Grid>
+
+        {/* Prize Information */}
         <Grid size={{ xs: 12 }}>
           <Card
             sx={{
               backgroundColor: "#ffffff",
               borderRadius: isMobile ? 2 : 3,
-              boxShadow: isMobile ? 1 : 2,
-              transition: "all 0.2s ease-in-out",
-              "&:hover": {
-                transform: isMobile ? "none" : "translateY(-2px)",
-                boxShadow: isMobile ? 1 : 4,
-              },
+              boxShadow: "none",
+              mb: isMobile ? 2 : 3,
             }}
           >
-            <CardContent sx={{ p: isMobile ? 2 : 3 }}>
+            <CardHeader sx={{ p: isMobile ? 2 : 3 }}>
               <Typography
-                variant={isMobile ? "h5" : "h4"}
-                gutterBottom
+                variant={isMobile ? "h6" : "h5"}
                 sx={{
-                  fontSize: isMobile ? "1.5rem" : undefined,
+                  fontSize: isMobile ? "1rem" : "1.25rem",
                   fontWeight: 600,
-                  lineHeight: 1.2,
-                  color: theme.palette.text.primary,
+                  color: theme.palette.primary.main,
                 }}
               >
-                {tournament.name}
+                Prize Breakdown
               </Typography>
-              {tournament.description && (
-                <Typography
-                  variant={isMobile ? "body2" : "body1"}
-                  color="text.secondary"
-                  paragraph
-                  sx={{
-                    fontSize: isMobile ? "0.875rem" : undefined,
-                    lineHeight: isMobile ? 1.3 : undefined,
-                    color: theme.palette.text.secondary,
-                  }}
-                >
-                  {tournament.description}
-                </Typography>
-              )}
-              <Box
-                display="flex"
-                gap={isMobile ? 1 : 2}
-                alignItems="center"
-                flexDirection={isMobile ? "column" : "row"}
-                sx={{ mt: isMobile ? 2 : 0 }}
-              >
-                <Chip
-                  label={`$${tournament.linePrice} per line`}
-                  color="primary"
-                  size={isMobile ? "small" : "medium"}
-                  sx={{
-                    fontSize: isMobile ? "0.75rem" : undefined,
-                    height: isMobile ? 24 : undefined,
-                  }}
-                />
-                <Chip
-                  label={`Betting closes: ${format(new Date(tournament.cutoffTime), "PPp")}`}
-                  color="warning"
-                  size={isMobile ? "small" : "medium"}
-                  sx={{
-                    fontSize: isMobile ? "0.75rem" : undefined,
-                    height: isMobile ? 24 : undefined,
-                  }}
-                />
-              </Box>
+            </CardHeader>
+            <CardContent sx={{ p: isMobile ? 2 : 3 }}>
+              <Grid container spacing={isMobile ? 1 : 2}>
+                <Grid size={{ xs: 6, sm: 3 }}>
+                  <Box textAlign="center">
+                    <Typography
+                      variant={isMobile ? "h6" : "h5"}
+                      sx={{
+                        fontSize: isMobile ? "1rem" : "1.25rem",
+                        fontWeight: 700,
+                        color: theme.palette.primary.main,
+                        mb: 0.5,
+                      }}
+                    >
+                      ${tournament.prizeGold || 0} Points
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontSize: isMobile ? "0.7rem" : "0.75rem",
+                        color: theme.palette.text.secondary,
+                      }}
+                    >
+                      Perfect Score
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid size={{ xs: 6, sm: 3 }}>
+                  <Box textAlign="center">
+                    <Typography
+                      variant={isMobile ? "h6" : "h5"}
+                      sx={{
+                        fontSize: isMobile ? "1rem" : "1.25rem",
+                        fontWeight: 700,
+                        color: theme.palette.primary.main,
+                        mb: 0.5,
+                      }}
+                    >
+                      ${tournament.prizeSilver || 0} Points
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontSize: isMobile ? "0.7rem" : "0.75rem",
+                        color: theme.palette.text.secondary,
+                      }}
+                    >
+                      One Wrong
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid size={{ xs: 6, sm: 3 }}>
+                  <Box textAlign="center">
+                    <Typography
+                      variant={isMobile ? "h6" : "h5"}
+                      sx={{
+                        fontSize: isMobile ? "1rem" : "1.25rem",
+                        fontWeight: 700,
+                        color: theme.palette.primary.main,
+                        mb: 0.5,
+                      }}
+                    >
+                      ${tournament.prizeBronze || 0} Points
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontSize: isMobile ? "0.7rem" : "0.75rem",
+                        color: theme.palette.text.secondary,
+                      }}
+                    >
+                      Two Wrong
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid size={{ xs: 6, sm: 3 }}>
+                  <Box textAlign="center">
+                    <Typography
+                      variant={isMobile ? "h6" : "h5"}
+                      sx={{
+                        fontSize: isMobile ? "1rem" : "1.25rem",
+                        fontWeight: 700,
+                        color: theme.palette.primary.main,
+                        mb: 0.5,
+                      }}
+                    >
+                      $0 Points
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontSize: isMobile ? "0.7rem" : "0.75rem",
+                        color: theme.palette.text.secondary,
+                      }}
+                    >
+                      No Wrong
+                    </Typography>
+                  </Box>
+                </Grid>
+              </Grid>
             </CardContent>
           </Card>
         </Grid>
 
         {/* Matches */}
         <Grid size={{ xs: 12, md: 8 }}>
-          <Typography
-            variant={isMobile ? "h6" : "h5"}
-            gutterBottom
-            sx={{
-              fontSize: isMobile ? "1.25rem" : undefined,
-              fontWeight: 600,
-              color: theme.palette.text.primary,
-            }}
-          >
-            Select Your Predictions
-          </Typography>
-          <Typography
-            variant={isMobile ? "body2" : "body1"}
-            color="text.secondary"
-            paragraph
-            sx={{
-              fontSize: isMobile ? "0.875rem" : undefined,
-              lineHeight: isMobile ? 1.3 : undefined,
-              color: theme.palette.text.secondary,
-            }}
-          >
-            Choose 1-3 outcomes for each match. More selections = more lines =
-            higher cost but better winning chances.
-          </Typography>
-
           {isMobile ? (
             // Mobile: Card-based layout
             <Grid container spacing={2}>
@@ -413,11 +661,11 @@ function BetPageContent({ tournamentId }: Props) {
                       sx={{
                         backgroundColor: "#ffffff",
                         borderRadius: 2,
-                        boxShadow: 1,
+                        boxShadow: "none",
                         transition: "all 0.2s ease-in-out",
                         "&:hover": {
                           transform: "translateY(-1px)",
-                          boxShadow: 2,
+                          boxShadow: 1,
                         },
                       }}
                     >
@@ -656,19 +904,15 @@ function BetPageContent({ tournamentId }: Props) {
         </Grid>
 
         {/* Bet Summary */}
-        <Grid size={{ xs: 12, md: 4 }}>
+        <Grid size={{ xs: 12, md: 4 }} sx={{ mb: 2 }}>
           <Card
             sx={{
               position: "sticky",
               top: 20,
               backgroundColor: "#ffffff",
               borderRadius: isMobile ? 2 : 3,
-              boxShadow: isMobile ? 1 : 2,
+              boxShadow: "none",
               transition: "all 0.2s ease-in-out",
-              "&:hover": {
-                transform: isMobile ? "none" : "translateY(-2px)",
-                boxShadow: isMobile ? 1 : 4,
-              },
             }}
           >
             <CardContent sx={{ p: isMobile ? 2 : 3 }}>
@@ -678,7 +922,7 @@ function BetPageContent({ tournamentId }: Props) {
                 sx={{
                   fontSize: isMobile ? "1.125rem" : undefined,
                   fontWeight: 600,
-                  color: theme.palette.text.primary,
+                  color: theme.palette.primary.main,
                 }}
               >
                 Bet Summary
@@ -747,7 +991,7 @@ function BetPageContent({ tournamentId }: Props) {
                   sx={{
                     fontSize: isMobile ? "0.8rem" : undefined,
                     fontWeight: 600,
-                    color: theme.palette.text.primary,
+                    color: theme.palette.primary.main,
                   }}
                 >
                   <strong>Prize Structure:</strong>
@@ -798,7 +1042,7 @@ function BetPageContent({ tournamentId }: Props) {
                   : `Place Bet - $${calculateBet.totalAmount.toFixed(2)}`}
               </Button>
 
-              {!calculateBet.isValid && calculateBet.validSelections > 0 && (
+              {!calculateBet.isValid && calculateBet?.validSelections > 0 && (
                 <Typography
                   variant="body2"
                   color="error"
@@ -808,7 +1052,7 @@ function BetPageContent({ tournamentId }: Props) {
                     lineHeight: isMobile ? 1.3 : undefined,
                   }}
                 >
-                  {calculateBet.validSelections < matches.length
+                  {calculateBet?.validSelections < matches.length
                     ? "Please complete all matches"
                     : calculateBet.totalLines > (tournament.maxLines || 10000)
                       ? "Too many lines selected"
