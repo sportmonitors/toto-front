@@ -1,68 +1,36 @@
 "use client";
 
+import { RoleEnum } from "@/services/api/types/role";
+import { Bet } from "@/services/api/types/bet";
 import withPageRequiredAuth from "@/services/auth/with-page-required-auth";
 import { useTranslation } from "@/services/i18n/client";
-import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
+import { getMyBets } from "@/services/api/services/bets";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SportsIcon from "@mui/icons-material/Sports";
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { useState, useEffect } from "react";
+import Typography from "@mui/material/Typography";
 import { format } from "date-fns";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import SportsIcon from "@mui/icons-material/Sports";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
-import { RoleEnum } from "@/services/api/types/role";
-
-interface BetSelection {
-  id: string | number;
-  matchId: string | number;
-  selectedResults: string[];
-  isWinning?: boolean;
-  match: {
-    id: string | number;
-    homeTeam: string;
-    awayTeam: string;
-    startsAt: string;
-    result?: string;
-    matchOrder: number;
-  };
-}
-
-interface Bet {
-  id: string | number;
-  tournamentId: string | number;
-  totalLines: number;
-  totalAmount: number;
-  linePrice: number;
-  status: "pending" | "active" | "won" | "lost" | "void";
-  wrongPredictions: number;
-  prizeGroup: "gold" | "silver" | "bronze" | "none";
-  prizeAmount?: number;
-  isPaid: boolean;
-  createdAt: string;
-  tournament: {
-    id: string | number;
-    name: string;
-    status: string;
-  };
-  selections: BetSelection[];
-}
+import { useEffect, useState } from "react";
+import { useSnackbar } from "@/hooks/use-snackbar";
 
 function BetsPageContent() {
   const { t } = useTranslation("bets");
+  const { enqueueSnackbar } = useSnackbar();
   const [bets, setBets] = useState<Bet[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -73,93 +41,13 @@ function BetsPageContent() {
   const loadBets = async () => {
     try {
       setLoading(true);
-      // TODO: Replace with actual API call
-      // const response = await getMyBets();
-
-      // Mock data for now
-      setBets([
-        {
-          id: "1",
-          tournamentId: "1",
-          totalLines: 6,
-          totalAmount: 9.6,
-          linePrice: 1.6,
-          status: "won",
-          wrongPredictions: 0,
-          prizeGroup: "gold",
-          prizeAmount: 1250.0,
-          isPaid: true,
-          createdAt: new Date(Date.now() - 259200000).toISOString(),
-          tournament: {
-            id: "1",
-            name: "Premier League Week 1",
-            status: "settled",
-          },
-          selections: [
-            {
-              id: "1",
-              matchId: "1",
-              selectedResults: ["1", "X"],
-              isWinning: true,
-              match: {
-                id: "1",
-                homeTeam: "Liverpool",
-                awayTeam: "Manchester United",
-                startsAt: new Date(Date.now() - 172800000).toISOString(),
-                result: "1",
-                matchOrder: 1,
-              },
-            },
-            {
-              id: "2",
-              matchId: "2",
-              selectedResults: ["X"],
-              isWinning: true,
-              match: {
-                id: "2",
-                homeTeam: "Chelsea",
-                awayTeam: "Arsenal",
-                startsAt: new Date(Date.now() - 172800000).toISOString(),
-                result: "X",
-                matchOrder: 2,
-              },
-            },
-          ],
-        },
-        {
-          id: "2",
-          tournamentId: "2",
-          totalLines: 3,
-          totalAmount: 4.8,
-          linePrice: 1.6,
-          status: "active",
-          wrongPredictions: 0,
-          prizeGroup: "none",
-          isPaid: false,
-          createdAt: new Date(Date.now() - 86400000).toISOString(),
-          tournament: {
-            id: "2",
-            name: "Premier League Week 2",
-            status: "active",
-          },
-          selections: [
-            {
-              id: "3",
-              matchId: "3",
-              selectedResults: ["1"],
-              match: {
-                id: "3",
-                homeTeam: "Manchester City",
-                awayTeam: "Tottenham",
-                startsAt: new Date(Date.now() + 86400000).toISOString(),
-                matchOrder: 1,
-              },
-            },
-          ],
-        },
-      ]);
+      const response = await getMyBets();
+      setBets(response?.data || []);
     } catch (error) {
       console.error("Failed to load bets:", error);
+      enqueueSnackbar("Failed to load your bets", {
+        variant: "error",
+      });
     } finally {
       setLoading(false);
     }
@@ -170,7 +58,9 @@ function BetsPageContent() {
       case "pending":
         return "warning";
       case "active":
-        return "info";
+        return "success";
+      case "finished":
+        return "default";
       case "won":
         return "success";
       case "lost":
@@ -189,7 +79,9 @@ function BetsPageContent() {
       case "silver":
         return "default";
       case "bronze":
-        return "error";
+        return "secondary";
+      case "none":
+        return "default";
       default:
         return "default";
     }
@@ -203,6 +95,8 @@ function BetsPageContent() {
         return "🥈";
       case "bronze":
         return "🥉";
+      case "none":
+        return "";
       default:
         return "";
     }
@@ -217,7 +111,7 @@ function BetsPageContent() {
           alignItems="center"
           minHeight="200px"
         >
-          <Typography>Loading bets...</Typography>
+          <Typography>{t("loading")}</Typography>
         </Box>
       </Container>
     );
@@ -229,10 +123,10 @@ function BetsPageContent() {
         {/* Header */}
         <Grid size={{ xs: 12 }}>
           <Typography variant="h3" gutterBottom>
-            My Bets
+            {t("title")}
           </Typography>
           <Typography variant="body1" color="text.secondary" paragraph>
-            Track your betting history and winnings across all tournaments.
+            {t("description")}
           </Typography>
         </Grid>
 
@@ -246,10 +140,10 @@ function BetsPageContent() {
                     sx={{ fontSize: 64, color: "text.secondary", mb: 2 }}
                   />
                   <Typography variant="h6" color="text.secondary" gutterBottom>
-                    No bets placed yet
+                    {t("noBets")}
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
-                    Start betting on active tournaments to see your bets here.
+                    {t("noBetsDescription")}
                   </Typography>
                 </Box>
               </CardContent>
@@ -271,7 +165,8 @@ function BetsPageContent() {
                             {bet.tournament.name}
                           </Typography>
                           <Typography variant="body2" color="text.secondary">
-                            Placed on {format(new Date(bet.createdAt), "PPp")}
+                            {t("placedOn")}{" "}
+                            {format(new Date(bet.createdAt), "PPp")}
                           </Typography>
                         </Box>
 
@@ -314,12 +209,12 @@ function BetsPageContent() {
                           <Card variant="outlined">
                             <CardContent>
                               <Typography variant="h6" gutterBottom>
-                                Bet Summary
+                                {t("betSummary")}
                               </Typography>
 
                               <Box mb={1}>
                                 <Typography variant="body2">
-                                  Total Lines:{" "}
+                                  {t("totalLines")}:{" "}
                                   <strong>
                                     {bet.totalLines.toLocaleString()}
                                   </strong>
@@ -328,13 +223,14 @@ function BetsPageContent() {
 
                               <Box mb={1}>
                                 <Typography variant="body2">
-                                  Line Price: <strong>${bet.linePrice}</strong>
+                                  {t("linePrice")}:{" "}
+                                  <strong>${bet.linePrice}</strong>
                                 </Typography>
                               </Box>
 
                               <Box mb={1}>
                                 <Typography variant="body2">
-                                  Total Cost:{" "}
+                                  {t("totalCost")}:{" "}
                                   <strong>${bet.totalAmount.toFixed(2)}</strong>
                                 </Typography>
                               </Box>
@@ -344,7 +240,7 @@ function BetsPageContent() {
                                   <>
                                     <Box mb={1}>
                                       <Typography variant="body2">
-                                        Wrong Predictions:{" "}
+                                        {t("wrongPredictions")}:{" "}
                                         <strong>{bet.wrongPredictions}</strong>
                                       </Typography>
                                     </Box>
@@ -355,7 +251,7 @@ function BetsPageContent() {
                                           variant="body2"
                                           color="success.main"
                                         >
-                                          Prize Won:{" "}
+                                          {t("prizeWon")}:{" "}
                                           <strong>
                                             ${bet.prizeAmount.toFixed(2)}
                                           </strong>
@@ -371,18 +267,18 @@ function BetsPageContent() {
                         {/* Selections */}
                         <Grid size={{ xs: 12, md: 8 }}>
                           <Typography variant="h6" gutterBottom>
-                            Match Selections
+                            {t("matchSelections")}
                           </Typography>
 
                           <TableContainer component={Paper} variant="outlined">
                             <Table size="small">
                               <TableHead>
                                 <TableRow>
-                                  <TableCell>Match</TableCell>
-                                  <TableCell>Teams</TableCell>
-                                  <TableCell>Selected</TableCell>
-                                  <TableCell>Result</TableCell>
-                                  <TableCell>Status</TableCell>
+                                  <TableCell>{t("match")}</TableCell>
+                                  <TableCell>{t("teams")}</TableCell>
+                                  <TableCell>{t("selected")}</TableCell>
+                                  <TableCell>{t("result")}</TableCell>
+                                  <TableCell>{t("status")}</TableCell>
                                 </TableRow>
                               </TableHead>
                               <TableBody>
@@ -436,7 +332,7 @@ function BetsPageContent() {
                                           variant="body2"
                                           color="text.secondary"
                                         >
-                                          Pending
+                                          {t("pending")}
                                         </Typography>
                                       )}
                                     </TableCell>

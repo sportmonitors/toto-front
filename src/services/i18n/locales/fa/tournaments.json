@@ -56,7 +56,18 @@
     "invalidSelection": "انتخاب نامعتبر",
     "pleaseCompleteAllSelections": "لطفاً همه انتخاب‌ها را تکمیل کنید",
     "betPlacedSuccessfully": "شرط با موفقیت ثبت شد!",
-    "status": "وضعیت"
+    "status": "وضعیت",
+    "myBets": "شرط‌های من",
+    "noBets": "هنوز شرطی ثبت نشده",
+    "betDetails": "جزئیات شرط",
+    "totalLines": "کل خطوط",
+    "totalAmount": "مبلغ کل",
+    "prizeGroup": "گروه جایزه",
+    "prizeAmount": "مبلغ جایزه",
+    "wrongPredictions": "پیش‌بینی‌های اشتباه",
+    "isPaid": "پرداخت شده",
+    "betStatus": "وضعیت",
+    "createdAt": "تاریخ ایجاد"
   },
   "status": {
     "upcoming": "آینده",

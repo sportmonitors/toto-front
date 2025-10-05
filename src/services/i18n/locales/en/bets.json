@@ -1,0 +1,21 @@
+{
+  "title": "My Bets",
+  "description": "Track your betting history and winnings across all tournaments.",
+  "loading": "Loading bets...",
+  "noBets": "No bets placed yet",
+  "noBetsDescription": "Start betting on active tournaments to see your bets here.",
+  "betSummary": "Bet Summary",
+  "totalLines": "Total Lines",
+  "linePrice": "Line Price",
+  "totalCost": "Total Cost",
+  "wrongPredictions": "Wrong Predictions",
+  "prizeWon": "Prize Won",
+  "matchSelections": "Match Selections",
+  "match": "Match",
+  "teams": "Teams",
+  "selected": "Selected",
+  "result": "Result",
+  "status": "Status",
+  "pending": "Pending",
+  "placedOn": "Placed on"
+}

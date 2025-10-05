@@ -56,7 +56,18 @@
     "invalidSelection": "Invalid selection",
     "pleaseCompleteAllSelections": "Please complete all selections",
     "betPlacedSuccessfully": "Bet placed successfully!",
-    "status": "Status"
+    "status": "Status",
+    "myBets": "My Bets",
+    "noBets": "No bets placed yet",
+    "betDetails": "Bet Details",
+    "totalLines": "Total Lines",
+    "totalAmount": "Total Amount",
+    "prizeGroup": "Prize Group",
+    "prizeAmount": "Prize Amount",
+    "wrongPredictions": "Wrong Predictions",
+    "isPaid": "Paid",
+    "betStatus": "Status",
+    "createdAt": "Created At"
   },
   "status": {
     "upcoming": "Upcoming",
