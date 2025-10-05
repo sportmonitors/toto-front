@@ -36,4 +36,3 @@ export type Tournament = {
   createdAt: string;
   updatedAt: string;
 };
-

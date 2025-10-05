@@ -469,4 +469,3 @@ function BetsPageContent() {
 export default withPageRequiredAuth(BetsPageContent, {
   roles: [RoleEnum.ADMIN, RoleEnum.USER],
 });
-

@@ -14,4 +14,3 @@ interface Props {
 export default function BetPage({ params }: Props) {
   return <BetPageContent tournamentId={params.id} />;
 }
-

@@ -7,4 +7,3 @@ const TournamentMatchesPage = () => {
 };
 
 export default TournamentMatchesPage;
-

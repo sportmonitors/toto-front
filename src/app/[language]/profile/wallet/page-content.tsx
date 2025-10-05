@@ -24,7 +24,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import useSnackbar from "@/hooks/use-snackbar";
+import { useSnackbar } from "@/hooks/use-snackbar";
 import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -443,4 +443,3 @@ function WalletPageContent() {
 export default withPageRequiredAuth(WalletPageContent, {
   roles: [RoleEnum.ADMIN, RoleEnum.USER],
 });
-

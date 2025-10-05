@@ -18,7 +18,6 @@ import Box from "@mui/material/Box";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Tournament,
   TournamentStatus,
   PrizeDistributionType,
 } from "@/services/api/types/tournament";
@@ -86,12 +85,13 @@ function CreateTournamentAdmin() {
     }
   };
 
-  const handleChange = (field: string) => (value: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+  const handleChange =
+    (field: string) => (value: string | number | Date | null) => {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: value,
+      }));
+    };
 
   return (
     <Container maxWidth="lg">
@@ -459,4 +459,3 @@ function CreateTournamentAdmin() {
 export default withPageRequiredAuth(CreateTournamentAdmin, {
   roles: [RoleEnum.ADMIN],
 });
-

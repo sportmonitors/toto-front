@@ -19,4 +19,3 @@ const TournamentDetailPage = () => {
 };
 
 export default TournamentDetailPage;
-

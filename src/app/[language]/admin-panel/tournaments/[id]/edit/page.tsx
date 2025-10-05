@@ -7,4 +7,3 @@ const TournamentEditPage = () => {
 };
 
 export default TournamentEditPage;
-

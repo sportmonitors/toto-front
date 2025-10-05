@@ -419,4 +419,3 @@ const TournamentDetailPageContent = () => {
 export default withPageRequiredAuth(TournamentDetailPageContent, [
   RoleEnum.ADMIN,
 ]);
-

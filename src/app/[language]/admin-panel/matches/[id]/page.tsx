@@ -7,4 +7,3 @@ const MatchDetailPage = () => {
 };
 
 export default MatchDetailPage;
-

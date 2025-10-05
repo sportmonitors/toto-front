@@ -1,42 +1,32 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Button,
-  Chip,
-  Grid,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Alert,
-  CircularProgress,
-  Divider,
-} from "@mui/material";
-import {
-  Edit as EditIcon,
-  ArrowBack as ArrowBackIcon,
-  Sports as SportsIcon,
-  Schedule as ScheduleIcon,
-} from "@mui/icons-material";
-import {
-  Match,
-  MatchStatus,
-  MatchResult,
-  SportType,
-} from "@/services/api/types/match";
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
+import TextField from "@mui/material/TextField";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import Alert from "@mui/material/Alert";
+import CircularProgress from "@mui/material/CircularProgress";
+import EditIcon from "@mui/icons-material/Edit";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import SportsIcon from "@mui/icons-material/Sports";
+import ScheduleIcon from "@mui/icons-material/Schedule";
+import { Match, MatchStatus, MatchResult } from "@/services/api/types/match";
 import { Tournament } from "@/services/api/types/tournament";
 import { getMatch, setMatchResult } from "@/services/api/services/matches";
 import { getTournamentById } from "@/services/api/services/tournaments";
 import withPageRequiredAuth from "@/services/auth/with-page-required-auth";
 import { RoleEnum } from "@/services/api/types/role";
 import { useSnackbar } from "@/hooks/use-snackbar";
+import Grid from "@mui/material/Grid";
 
 const MatchDetailPageContent = () => {
   const params = useParams();
@@ -57,24 +47,20 @@ const MatchDetailPageContent = () => {
     status: MatchStatus.FINISHED,
   });
 
-  useEffect(() => {
-    loadMatch();
-  }, [matchId]);
-
-  const loadMatch = async () => {
+  const loadMatch = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       const response = await getMatch(matchId);
-      const matchData = response.data;
+      const matchData = response.data as Match;
       setMatch(matchData);
 
       // Load tournament data
       if (matchData.tournamentId) {
         const tournamentResponse = await getTournamentById(
-          matchData.tournamentId
+          matchData.tournamentId as any
         );
-        setTournament(tournamentResponse.data);
+        setTournament(tournamentResponse.data as Tournament);
       }
 
       // Set initial result data
@@ -90,7 +76,7 @@ const MatchDetailPageContent = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [matchId]);
 
   const handleSetResult = async () => {
     try {
@@ -166,6 +152,10 @@ const MatchDetailPageContent = () => {
     return new Date(dateString).toLocaleString();
   };
 
+  useEffect(() => {
+    loadMatch();
+  }, [matchId, loadMatch]);
+
   if (loading) {
     return (
       <Box
@@ -212,26 +202,26 @@ const MatchDetailPageContent = () => {
 
       <Grid container spacing={3}>
         {/* Match Information */}
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 Match Information
               </Typography>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Typography variant="body2" color="textSecondary">
                     Home Team
                   </Typography>
                   <Typography variant="h6">{match.homeTeam}</Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Typography variant="body2" color="textSecondary">
                     Away Team
                   </Typography>
                   <Typography variant="h6">{match.awayTeam}</Typography>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid size={{ xs: 12, sm: 4 }}>
                   <Typography variant="body2" color="textSecondary">
                     Sport Type
                   </Typography>
@@ -241,23 +231,32 @@ const MatchDetailPageContent = () => {
                     size="small"
                   />
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid size={{ xs: 12, sm: 4 }}>
                   <Typography variant="body2" color="textSecondary">
                     Status
                   </Typography>
                   <Chip
                     label={getStatusLabel(match.status)}
-                    color={getStatusColor(match.status) as any}
+                    color={
+                      getStatusColor(match.status) as
+                        | "default"
+                        | "primary"
+                        | "secondary"
+                        | "error"
+                        | "info"
+                        | "success"
+                        | "warning"
+                    }
                     size="small"
                   />
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid size={{ xs: 12, sm: 4 }}>
                   <Typography variant="body2" color="textSecondary">
                     Match Order
                   </Typography>
                   <Typography variant="body1">{match.matchOrder}</Typography>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <Box display="flex" alignItems="center">
                     <ScheduleIcon sx={{ mr: 1, color: "text.secondary" }} />
                     <Box>
@@ -276,7 +275,7 @@ const MatchDetailPageContent = () => {
         </Grid>
 
         {/* Tournament Information */}
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -310,14 +309,14 @@ const MatchDetailPageContent = () => {
         </Grid>
 
         {/* Current Result */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 Current Result
               </Typography>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={4}>
+                <Grid size={{ xs: 12, sm: 4 }}>
                   <Typography variant="body2" color="textSecondary">
                     Result
                   </Typography>
@@ -325,7 +324,7 @@ const MatchDetailPageContent = () => {
                     {match.result ? getResultLabel(match.result) : "Not Set"}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid size={{ xs: 12, sm: 4 }}>
                   <Typography variant="body2" color="textSecondary">
                     Home Score
                   </Typography>
@@ -333,7 +332,7 @@ const MatchDetailPageContent = () => {
                     {match.homeScore !== null ? match.homeScore : "-"}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid size={{ xs: 12, sm: 4 }}>
                   <Typography variant="body2" color="textSecondary">
                     Away Score
                   </Typography>
@@ -347,14 +346,14 @@ const MatchDetailPageContent = () => {
         </Grid>
 
         {/* Set Result */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 Set Match Result
               </Typography>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={3}>
+                <Grid size={{ xs: 12, sm: 3 }}>
                   <FormControl fullWidth>
                     <InputLabel>Result</InputLabel>
                     <Select
@@ -373,7 +372,7 @@ const MatchDetailPageContent = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid size={{ xs: 12, sm: 3 }}>
                   <TextField
                     fullWidth
                     label="Home Score"
@@ -388,7 +387,7 @@ const MatchDetailPageContent = () => {
                     inputProps={{ min: 0 }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid size={{ xs: 12, sm: 3 }}>
                   <TextField
                     fullWidth
                     label="Away Score"
@@ -403,7 +402,7 @@ const MatchDetailPageContent = () => {
                     inputProps={{ min: 0 }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid size={{ xs: 12, sm: 3 }}>
                   <FormControl fullWidth>
                     <InputLabel>Status</InputLabel>
                     <Select
@@ -427,7 +426,7 @@ const MatchDetailPageContent = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <Button
                     variant="contained"
                     onClick={handleSetResult}
@@ -446,4 +445,6 @@ const MatchDetailPageContent = () => {
   );
 };
 
-export default withPageRequiredAuth(MatchDetailPageContent, [RoleEnum.ADMIN]);
+export default withPageRequiredAuth(MatchDetailPageContent, {
+  roles: [RoleEnum.ADMIN],
+});
