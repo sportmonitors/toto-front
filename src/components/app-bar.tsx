@@ -21,8 +21,10 @@ import { RoleEnum } from "@/services/api/types/role";
 import Divider from "@mui/material/Divider";
 import ThemeSwitchButton from "@/components/switch-theme-button";
 import { IS_SIGN_UP_ENABLED } from "@/services/auth/config";
+import { useTheme } from "@mui/material/styles";
 
 function ResponsiveAppBar() {
+  const theme = useTheme();
   const { t } = useTranslation("common");
   const { user, isLoaded } = useAuth();
   const { logOut } = useAuthActions();
@@ -48,7 +50,25 @@ function ResponsiveAppBar() {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar
+      position="static"
+      sx={{
+        backgroundColor: "#093453 !important",
+        "--Paper-overlay": "transparent",
+        "&.MuiAppBar-root": {
+          backgroundColor: "#093453 !important",
+          "--Paper-overlay": "transparent !important",
+        },
+        "&.MuiAppBar-colorPrimary": {
+          backgroundColor: "#093453 !important",
+          "--Paper-overlay": "transparent !important",
+        },
+        "&.MuiPaper-root": {
+          backgroundColor: "#093453 !important",
+          "--Paper-overlay": "transparent !important",
+        },
+      }}
+    >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography
@@ -62,7 +82,7 @@ function ResponsiveAppBar() {
               fontFamily: "monospace",
               fontWeight: 700,
               letterSpacing: ".3rem",
-              color: "inherit",
+              color: "#ffffff",
               textDecoration: "none",
             }}
           >
@@ -76,7 +96,7 @@ function ResponsiveAppBar() {
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
-              color="inherit"
+              sx={{ color: "#ffffff" }}
             >
               <MenuIcon />
             </IconButton>
@@ -99,7 +119,7 @@ function ResponsiveAppBar() {
               }}
             >
               <MenuItem onClick={handleCloseNavMenu} component={Link} href="/">
-                <Typography textAlign="center">
+                <Typography textAlign="center" sx={{ color: "#ffffff" }}>
                   {t("common:navigation.home")}
                 </Typography>
               </MenuItem>
@@ -112,7 +132,7 @@ function ResponsiveAppBar() {
                     component={Link}
                     href="/admin-panel/users"
                   >
-                    <Typography textAlign="center">
+                    <Typography textAlign="center" sx={{ color: "#ffffff" }}>
                       {t("common:navigation.users")}
                     </Typography>
                   </MenuItem>,
@@ -127,7 +147,7 @@ function ResponsiveAppBar() {
                     component={Link}
                     href="/sign-in"
                   >
-                    <Typography textAlign="center">
+                    <Typography textAlign="center" sx={{ color: "#ffffff" }}>
                       {t("common:navigation.signIn")}
                     </Typography>
                   </MenuItem>,
@@ -138,7 +158,7 @@ function ResponsiveAppBar() {
                       component={Link}
                       href="/sign-up"
                     >
-                      <Typography textAlign="center">
+                      <Typography textAlign="center" sx={{ color: "#ffffff" }}>
                         {t("common:navigation.signUp")}
                       </Typography>
                     </MenuItem>
@@ -158,7 +178,7 @@ function ResponsiveAppBar() {
               fontFamily: "monospace",
               fontWeight: 700,
               letterSpacing: ".3rem",
-              color: "inherit",
+              color: "#ffffff",
               textDecoration: "none",
             }}
           >
@@ -167,7 +187,11 @@ function ResponsiveAppBar() {
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             <Button
               onClick={handleCloseNavMenu}
-              sx={{ my: 2, color: "white", display: "block" }}
+              sx={{
+                my: 2,
+                color: "#ffffff",
+                display: "block",
+              }}
               component={Link}
               href="/"
             >
@@ -179,7 +203,11 @@ function ResponsiveAppBar() {
                 <>
                   <Button
                     onClick={handleCloseNavMenu}
-                    sx={{ my: 2, color: "white", display: "block" }}
+                    sx={{
+                      my: 2,
+                      color: "#ffffff",
+                      display: "block",
+                    }}
                     component={Link}
                     href="/admin-panel/users"
                   >
@@ -200,7 +228,7 @@ function ResponsiveAppBar() {
           </Box>
 
           {!isLoaded ? (
-            <CircularProgress color="inherit" />
+            <CircularProgress sx={{ color: "#ffffff" }} />
           ) : user ? (
             <>
               <Box sx={{ flexGrow: 0 }}>
@@ -213,6 +241,10 @@ function ResponsiveAppBar() {
                     <Avatar
                       alt={user?.firstName + " " + user?.lastName}
                       src={user.photo?.path}
+                      sx={{
+                        backgroundColor: "#ffffff",
+                        color: "#093453",
+                      }}
                     />
                   </IconButton>
                 </Tooltip>
@@ -238,7 +270,7 @@ function ResponsiveAppBar() {
                     href="/profile"
                     data-testid="user-profile"
                   >
-                    <Typography textAlign="center">
+                    <Typography textAlign="center" sx={{ color: "#ffffff" }}>
                       {t("common:navigation.profile")}
                     </Typography>
                   </MenuItem>
@@ -249,7 +281,7 @@ function ResponsiveAppBar() {
                     }}
                     data-testid="logout-menu-item"
                   >
-                    <Typography textAlign="center">
+                    <Typography textAlign="center" sx={{ color: "#ffffff" }}>
                       {t("common:navigation.logout")}
                     </Typography>
                   </MenuItem>
@@ -260,7 +292,11 @@ function ResponsiveAppBar() {
             <Box sx={{ flexGrow: 0, display: { xs: "none", md: "flex" } }}>
               <Button
                 onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: "white", display: "block" }}
+                sx={{
+                  my: 2,
+                  color: "#ffffff",
+                  display: "block",
+                }}
                 component={Link}
                 href="/sign-in"
               >
@@ -269,7 +305,11 @@ function ResponsiveAppBar() {
               {IS_SIGN_UP_ENABLED && (
                 <Button
                   onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: "white", display: "block" }}
+                  sx={{
+                    my: 2,
+                    color: "#ffffff",
+                    display: "block",
+                  }}
                   component={Link}
                   href="/sign-up"
                 >

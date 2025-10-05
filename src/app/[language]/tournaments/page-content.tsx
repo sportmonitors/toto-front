@@ -10,17 +10,22 @@ import CardActions from "@mui/material/CardActions";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import Box from "@mui/material/Box";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 import Link from "@/components/link";
 import { useState, useEffect } from "react";
-import { Tournament, TournamentStatus } from "@/services/api/types/tournament";
+import { Tournament } from "@/services/api/types/tournament";
 import { getActiveTournaments } from "@/services/api/services/tournaments";
+import HTTP_CODES_ENUM from "@/services/api/types/http-codes";
 import { format, isAfter } from "date-fns";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import EuroIcon from "@mui/icons-material/Euro";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 
 function TournamentsUser() {
-  const { t } = useTranslation("tournaments");
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,9 +37,17 @@ function TournamentsUser() {
     try {
       setLoading(true);
       const response = await getActiveTournaments();
-      setTournaments(response.data || []);
+
+      // Check if response is successful and has data
+      if (response.status === HTTP_CODES_ENUM.OK && response.data) {
+        setTournaments(response.data);
+      } else {
+        console.error("Failed to load tournaments:", response);
+        setTournaments([]);
+      }
     } catch (error) {
       console.error("Failed to load tournaments:", error);
+      setTournaments([]);
     } finally {
       setLoading(false);
     }
@@ -64,50 +77,73 @@ function TournamentsUser() {
 
   if (loading) {
     return (
-      <Container maxWidth="xl">
+      <Container
+        maxWidth="xl"
+        sx={{
+          background: theme.palette.background.gradient,
+          minHeight: "100vh",
+        }}
+      >
         <Box
           display="flex"
           justifyContent="center"
           alignItems="center"
           minHeight="200px"
+          px={isMobile ? 2 : 3}
         >
-          <Typography>Loading tournaments...</Typography>
+          <Typography
+            variant={isMobile ? "body1" : "h6"}
+            sx={{ color: theme.palette.text.primary }}
+          >
+            Loading tournaments...
+          </Typography>
         </Box>
       </Container>
     );
   }
 
   return (
-    <Container maxWidth="xl">
-      <Grid container spacing={3} pt={3}>
+    <Container
+      maxWidth="xl"
+      sx={{
+        px: isMobile ? 2 : 3,
+        background: theme.palette.background.gradient,
+        minHeight: "100vh",
+      }}
+    >
+      <Grid container spacing={isMobile ? 2 : 3} pt={isMobile ? 2 : 3}>
         <Grid size={{ xs: 12 }}>
-          <Typography variant="h3" gutterBottom>
-            Active Tournaments
-          </Typography>
-          <Typography variant="body1" color="text.secondary" paragraph>
-            Place your bets on active tournaments. Each tournament consists of
-            multiple matches where you can predict outcomes.
-          </Typography>
-        </Grid>
-
-        <Grid size={{ xs: 12 }}>
-          <Grid container spacing={3}>
+          <Grid container spacing={isMobile ? 2 : 3}>
             {tournaments.map((tournament) => (
-              <Grid size={{ xs: 12, md: 6, lg: 4 }} key={tournament.id}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 6,
+                  md: 6,
+                  lg: 4,
+                  xl: 3,
+                }}
+                key={tournament.id}
+              >
                 <Card
                   sx={{
                     height: "100%",
                     display: "flex",
                     flexDirection: "column",
-                    background: tournament.backgroundColor
-                      ? `linear-gradient(135deg, ${tournament.backgroundColor}22, ${tournament.backgroundColor}11)`
-                      : undefined,
+                    backgroundColor: "#ffffff",
+                    borderRadius: isMobile ? 2 : 3,
+                    boxShadow: isMobile ? 1 : 2,
+                    transition: "all 0.2s ease-in-out",
+                    "&:hover": {
+                      transform: isMobile ? "none" : "translateY(-2px)",
+                      boxShadow: isMobile ? 1 : 4,
+                    },
                   }}
                 >
                   {tournament.backgroundImage && (
                     <Box
                       sx={{
-                        height: 120,
+                        height: isMobile ? 100 : 120,
                         backgroundImage: `url(${tournament.backgroundImage})`,
                         backgroundSize: "cover",
                         backgroundPosition: "center",
@@ -115,61 +151,130 @@ function TournamentsUser() {
                     />
                   )}
 
-                  <CardContent sx={{ flexGrow: 1 }}>
+                  <CardContent sx={{ flexGrow: 1, p: isMobile ? 2 : 3 }}>
                     <Box
                       display="flex"
                       justifyContent="space-between"
                       alignItems="start"
-                      mb={2}
+                      mb={isMobile ? 1.5 : 2}
+                      flexDirection={isMobile ? "column" : "row"}
+                      gap={isMobile ? 1 : 0}
                     >
-                      <Typography variant="h6" component="h2">
+                      <Typography
+                        variant={isMobile ? "subtitle1" : "h6"}
+                        component="h2"
+                        sx={{
+                          fontSize: isMobile ? "1rem" : undefined,
+                          fontWeight: 600,
+                          lineHeight: 1.2,
+                          color: theme.palette.text.primary,
+                        }}
+                      >
                         {tournament.name}
                       </Typography>
                       <Chip
                         label={canBet(tournament) ? "Open" : "Closed"}
                         color={canBet(tournament) ? "success" : "error"}
-                        size="small"
+                        size={isMobile ? "small" : "medium"}
+                        sx={{
+                          fontSize: isMobile ? "0.75rem" : undefined,
+                          height: isMobile ? 24 : undefined,
+                        }}
                       />
                     </Box>
 
                     {tournament.description && (
-                      <Typography variant="body2" color="text.secondary" mb={2}>
+                      <Typography
+                        variant="body2"
+                        mb={isMobile ? 1.5 : 2}
+                        sx={{
+                          fontSize: isMobile ? "0.8rem" : undefined,
+                          lineHeight: isMobile ? 1.3 : undefined,
+                          color: theme.palette.text.secondary,
+                        }}
+                      >
                         {tournament.description}
                       </Typography>
                     )}
 
-                    <Box display="flex" alignItems="center" mb={1}>
-                      <AccessTimeIcon fontSize="small" sx={{ mr: 1 }} />
-                      <Typography variant="body2">
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      mb={isMobile ? 0.75 : 1}
+                    >
+                      <AccessTimeIcon
+                        fontSize={isMobile ? "small" : "medium"}
+                        sx={{ mr: 1, fontSize: isMobile ? "1rem" : undefined }}
+                      />
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontSize: isMobile ? "0.8rem" : undefined,
+                          color: theme.palette.text.primary,
+                        }}
+                      >
                         {getTimeRemaining(tournament.cutoffTime)}
                       </Typography>
                     </Box>
 
-                    <Box display="flex" alignItems="center" mb={1}>
-                      <EuroIcon fontSize="small" sx={{ mr: 1 }} />
-                      <Typography variant="body2">
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      mb={isMobile ? 0.75 : 1}
+                    >
+                      <EuroIcon
+                        fontSize={isMobile ? "small" : "medium"}
+                        sx={{ mr: 1, fontSize: isMobile ? "1rem" : undefined }}
+                      />
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontSize: isMobile ? "0.8rem" : undefined,
+                          color: theme.palette.text.primary,
+                        }}
+                      >
                         ${tournament.linePrice} per line
                       </Typography>
                     </Box>
 
-                    <Box display="flex" alignItems="center" mb={2}>
-                      <EmojiEventsIcon fontSize="small" sx={{ mr: 1 }} />
-                      <Typography variant="body2">
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      mb={isMobile ? 1.5 : 2}
+                    >
+                      <EmojiEventsIcon
+                        fontSize={isMobile ? "small" : "medium"}
+                        sx={{ mr: 1, fontSize: isMobile ? "1rem" : undefined }}
+                      />
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontSize: isMobile ? "0.8rem" : undefined,
+                          color: theme.palette.text.primary,
+                        }}
+                      >
                         Prizes: ${tournament.prizeGold || 0} | $
                         {tournament.prizeSilver || 0} | $
                         {tournament.prizeBronze || 0}
                       </Typography>
                     </Box>
 
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: isMobile ? "0.8rem" : undefined,
+                        lineHeight: isMobile ? 1.3 : undefined,
+                        color: theme.palette.text.secondary,
+                      }}
+                    >
                       Tournament runs from{" "}
                       {format(new Date(tournament.startDate), "MMM dd")} to{" "}
                       {format(new Date(tournament.endDate), "MMM dd, yyyy")}
                     </Typography>
                   </CardContent>
 
-                  <CardActions sx={{ p: 2, pt: 0 }}>
-                    <Button
+                  <CardActions sx={{ p: isMobile ? 1.5 : 2, pt: 0 }}>
+                    {/* <Button
                       size="small"
                       LinkComponent={Link}
                       href={`/tournaments/${tournament.id}`}
@@ -177,14 +282,19 @@ function TournamentsUser() {
                       fullWidth
                     >
                       View Details
-                    </Button>
+                    </Button> */}
                     {canBet(tournament) && (
                       <Button
-                        size="small"
+                        size={isMobile ? "small" : "medium"}
                         LinkComponent={Link}
                         href={`/tournaments/${tournament.id}/bet`}
                         variant="contained"
                         fullWidth
+                        sx={{
+                          fontSize: isMobile ? "0.875rem" : undefined,
+                          py: isMobile ? 1 : undefined,
+                          fontWeight: 600,
+                        }}
                       >
                         Place Bet
                       </Button>
@@ -196,14 +306,34 @@ function TournamentsUser() {
           </Grid>
 
           {tournaments.length === 0 && (
-            <Box textAlign="center" py={8}>
+            <Box textAlign="center" py={isMobile ? 6 : 8}>
               <EmojiEventsIcon
-                sx={{ fontSize: 64, color: "text.secondary", mb: 2 }}
+                sx={{
+                  fontSize: isMobile ? 48 : 64,
+                  color: "text.secondary",
+                  mb: 2,
+                }}
               />
-              <Typography variant="h5" color="text.secondary" gutterBottom>
+              <Typography
+                variant={isMobile ? "h6" : "h5"}
+                gutterBottom
+                sx={{
+                  fontSize: isMobile ? "1.25rem" : undefined,
+                  fontWeight: 600,
+                  color: theme.palette.text.secondary,
+                }}
+              >
                 No Active Tournaments
               </Typography>
-              <Typography variant="body1" color="text.secondary">
+              <Typography
+                variant={isMobile ? "body2" : "body1"}
+                sx={{
+                  fontSize: isMobile ? "0.875rem" : undefined,
+                  maxWidth: isMobile ? "280px" : "400px",
+                  mx: "auto",
+                  color: theme.palette.text.secondary,
+                }}
+              >
                 Check back later for new tournaments to join!
               </Typography>
             </Box>

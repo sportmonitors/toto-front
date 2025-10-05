@@ -7,6 +7,13 @@ import {
 import { useMemo, PropsWithChildren } from "react";
 import StyledJsxRegistry from "./registry";
 
+// Extend the theme to include custom background gradient
+declare module "@mui/material/styles" {
+  interface TypeBackground {
+    gradient?: string;
+  }
+}
+
 function ThemeProvider(props: PropsWithChildren) {
   const theme = useMemo(
     () =>
@@ -14,7 +21,36 @@ function ThemeProvider(props: PropsWithChildren) {
         cssVariables: {
           colorSchemeSelector: "class",
         },
-        colorSchemes: { light: true, dark: true },
+        colorSchemes: {
+          light: {
+            palette: {
+              primary: {
+                main: "#093453",
+              },
+              background: {
+                gradient: "linear-gradient(180deg, #eff6ff, #dbeafe)",
+              },
+              text: {
+                primary: "#000000",
+                secondary: "#374151",
+              },
+            },
+          },
+          dark: {
+            palette: {
+              primary: {
+                main: "#093453",
+              },
+              background: {
+                gradient: "linear-gradient(180deg, #1e3a8a, #1e40af)",
+              },
+              text: {
+                primary: "#ffffff",
+                secondary: "#d1d5db",
+              },
+            },
+          },
+        },
       }),
     []
   );
