@@ -186,16 +186,16 @@ function BetsPageContent() {
                           )}
 
                           <Typography variant="body2" fontWeight="medium">
-                            ${bet.totalAmount.toFixed(2)}
+                            ${Number(bet.totalAmount).toFixed(2)}
                           </Typography>
 
-                          {bet.prizeAmount && bet.prizeAmount > 0 && (
+                          {bet.prizeAmount && Number(bet.prizeAmount) > 0 && (
                             <Typography
                               variant="body2"
                               color="success.main"
                               fontWeight="medium"
                             >
-                              +${bet.prizeAmount.toFixed(2)}
+                              +${Number(bet.prizeAmount).toFixed(2)}
                             </Typography>
                           )}
                         </Box>
@@ -231,7 +231,7 @@ function BetsPageContent() {
                               <Box mb={1}>
                                 <Typography variant="body2">
                                   {t("totalCost")}:{" "}
-                                  <strong>${bet.totalAmount.toFixed(2)}</strong>
+                                  <strong>${Number(bet.totalAmount).toFixed(2)}</strong>
                                 </Typography>
                               </Box>
 
@@ -253,7 +253,7 @@ function BetsPageContent() {
                                         >
                                           {t("prizeWon")}:{" "}
                                           <strong>
-                                            ${bet.prizeAmount.toFixed(2)}
+                                            ${Number(bet.prizeAmount).toFixed(2)}
                                           </strong>
                                         </Typography>
                                       </Box>

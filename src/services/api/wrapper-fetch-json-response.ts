@@ -42,3 +42,6 @@ async function wrapperFetchJsonResponse<T>(config: {
 }
 
 export default wrapperFetchJsonResponse;
+
+// Export the function with a different name for compatibility
+export const fetchJsonResponse = wrapperFetchJsonResponse;

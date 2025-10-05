@@ -20,6 +20,7 @@ import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { format, isAfter } from "date-fns";
 import { useEffect, useState } from "react";
+import useHallTokenLogin from "@/services/auth/use-hall-token-login";
 
 function TournamentsUser() {
   const { t } = useTranslation("tournaments");
@@ -28,6 +29,10 @@ function TournamentsUser() {
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Handle hall token auto-login
+  const { isLoading: isTokenLoginLoading, error: tokenLoginError } =
+    useHallTokenLogin();
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -82,7 +87,7 @@ function TournamentsUser() {
     return { days, hours, minutes, seconds };
   };
 
-  if (loading) {
+  if (loading || isTokenLoginLoading) {
     return (
       <Container
         maxWidth="xl"
@@ -103,6 +108,30 @@ function TournamentsUser() {
             sx={{ color: theme.palette.text.primary }}
           >
             {t("loading")}
+          </Typography>
+        </Box>
+      </Container>
+    );
+  }
+
+  if (tokenLoginError) {
+    return (
+      <Container
+        maxWidth="xl"
+        sx={{
+          background: theme.palette.background.gradient,
+          minHeight: "100vh",
+        }}
+      >
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="200px"
+          px={isMobile ? 2 : 3}
+        >
+          <Typography variant="h6" color="error">
+            Login failed: {tokenLoginError}
           </Typography>
         </Box>
       </Container>

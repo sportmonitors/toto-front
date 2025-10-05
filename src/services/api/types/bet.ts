@@ -38,3 +38,4 @@ export interface Bet {
 export interface MyBetsResponse {
   data: Bet[];
 }
+
