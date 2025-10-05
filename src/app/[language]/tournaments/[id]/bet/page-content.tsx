@@ -791,9 +791,18 @@ function BetPageContent({ tournamentId }: Props) {
                 boxShadow: "none",
                 border: "1px solid #e0e0e0",
                 backgroundColor: "#ffffff",
+                "& .MuiTable-root": {
+                  backgroundColor: "#ffffff",
+                },
+                "& .MuiTableHead-root": {
+                  backgroundColor: "#f5f5f5",
+                },
+                "& .MuiTableBody-root": {
+                  backgroundColor: "#ffffff",
+                },
               }}
             >
-              <Table>
+              <Table sx={{ backgroundColor: "#ffffff" }}>
                 <TableHead>
                   <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
                     <TableCell
@@ -857,7 +866,7 @@ function BetPageContent({ tournamentId }: Props) {
                     </TableCell>
                   </TableRow>
                 </TableHead>
-                <TableBody>
+                <TableBody sx={{ backgroundColor: "#ffffff" }}>
                   {matches.map((match) => {
                     const matchSelections =
                       selections.find((s) => s.matchId === match.id)
