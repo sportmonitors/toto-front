@@ -231,6 +231,7 @@ function BetPageContent({ tournamentId }: Props) {
         sx={{
           background: theme.palette.background.gradient,
           minHeight: "100vh",
+          backgroundColor: theme.palette.background.default,
         }}
       >
         <Box
@@ -259,6 +260,7 @@ function BetPageContent({ tournamentId }: Props) {
           px: isMobile ? 2 : 3,
           background: theme.palette.background.gradient,
           minHeight: "100vh",
+          backgroundColor: theme.palette.background.default,
         }}
       >
         <Box textAlign="center" py={isMobile ? 6 : 8}>
@@ -315,6 +317,7 @@ function BetPageContent({ tournamentId }: Props) {
         px: isMobile ? 2 : 3,
         background: theme.palette.background.gradient,
         minHeight: "100vh",
+        backgroundColor: theme.palette.background.default,
       }}
     >
       <Grid container spacing={isMobile ? 1 : 3} pt={isMobile ? 1 : 3}>
@@ -530,18 +533,6 @@ function BetPageContent({ tournamentId }: Props) {
               mb: isMobile ? 2 : 3,
             }}
           >
-            <CardHeader sx={{ p: isMobile ? 2 : 3 }}>
-              <Typography
-                variant={isMobile ? "h6" : "h5"}
-                sx={{
-                  fontSize: isMobile ? "1rem" : "1.25rem",
-                  fontWeight: 600,
-                  color: theme.palette.primary.main,
-                }}
-              >
-                Prize Breakdown
-              </Typography>
-            </CardHeader>
             <CardContent sx={{ p: isMobile ? 2 : 3 }}>
               <Grid container spacing={isMobile ? 1 : 2}>
                 <Grid size={{ xs: 6, sm: 3 }}>
@@ -716,7 +707,11 @@ function BetPageContent({ tournamentId }: Props) {
                           {format(new Date(match.startsAt), "MMM dd, HH:mm")}
                         </Typography>
 
-                        <ButtonGroup variant="outlined" fullWidth>
+                        <ButtonGroup
+                          variant="outlined"
+                          fullWidth
+                          sx={{ border: 0 }}
+                        >
                           <Button
                             variant={
                               matchSelections.includes(MatchResult.HOME)
@@ -726,7 +721,7 @@ function BetPageContent({ tournamentId }: Props) {
                             onClick={() =>
                               toggleSelection(match.id, MatchResult.HOME)
                             }
-                            sx={{ flex: 1 }}
+                            sx={{ flex: 1, borderRight: 0 }}
                             size="small"
                           >
                             1
@@ -740,7 +735,9 @@ function BetPageContent({ tournamentId }: Props) {
                             onClick={() =>
                               toggleSelection(match.id, MatchResult.DRAW)
                             }
-                            sx={{ flex: 1 }}
+                            sx={{
+                              flex: 1,
+                            }}
                             size="small"
                           >
                             X
@@ -786,17 +783,78 @@ function BetPageContent({ tournamentId }: Props) {
             </Grid>
           ) : (
             // Desktop: Table layout
-            <TableContainer component={Paper} variant="outlined">
+            <TableContainer
+              component={Paper}
+              variant="outlined"
+              sx={{
+                borderRadius: 2,
+                boxShadow: "none",
+                border: "1px solid #e0e0e0",
+                backgroundColor: "#ffffff",
+              }}
+            >
               <Table>
                 <TableHead>
-                  <TableRow>
-                    <TableCell>Match</TableCell>
-                    <TableCell>Teams</TableCell>
-                    <TableCell>Date & Time</TableCell>
-                    <TableCell align="center">Home (1)</TableCell>
-                    <TableCell align="center">Draw (X)</TableCell>
-                    <TableCell align="center">Away (2)</TableCell>
-                    <TableCell>Selected</TableCell>
+                  <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
+                    <TableCell
+                      sx={{
+                        fontWeight: 600,
+                        color: theme.palette.primary.main,
+                      }}
+                    >
+                      Match
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: 600,
+                        color: theme.palette.primary.main,
+                      }}
+                    >
+                      Teams
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: 600,
+                        color: theme.palette.primary.main,
+                      }}
+                    >
+                      Date & Time
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      sx={{
+                        fontWeight: 600,
+                        color: theme.palette.primary.main,
+                      }}
+                    >
+                      Home (1)
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      sx={{
+                        fontWeight: 600,
+                        color: theme.palette.primary.main,
+                      }}
+                    >
+                      Draw (X)
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      sx={{
+                        fontWeight: 600,
+                        color: theme.palette.primary.main,
+                      }}
+                    >
+                      Away (2)
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: 600,
+                        color: theme.palette.primary.main,
+                      }}
+                    >
+                      Selected
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -806,8 +864,18 @@ function BetPageContent({ tournamentId }: Props) {
                         ?.selectedResults || [];
 
                     return (
-                      <TableRow key={match.id}>
-                        <TableCell>
+                      <TableRow
+                        key={match.id}
+                        sx={{
+                          "&:hover": {
+                            backgroundColor: "#f9f9f9",
+                          },
+                          "&:nth-of-type(even)": {
+                            backgroundColor: "#fafafa",
+                          },
+                        }}
+                      >
+                        <TableCell sx={{ py: 2 }}>
                           <Box display="flex" alignItems="center">
                             <SportsSoccerIcon
                               sx={{ mr: 1, color: "primary.main" }}
@@ -817,17 +885,24 @@ function BetPageContent({ tournamentId }: Props) {
                             </Typography>
                           </Box>
                         </TableCell>
-                        <TableCell>
-                          <Typography variant="body2" fontWeight="medium">
+                        <TableCell sx={{ py: 2 }}>
+                          <Typography
+                            variant="body2"
+                            fontWeight="medium"
+                            color={theme.palette.text.primary}
+                          >
                             {match.homeTeam} vs {match.awayTeam}
                           </Typography>
                         </TableCell>
-                        <TableCell>
-                          <Typography variant="body2" color="text.secondary">
+                        <TableCell sx={{ py: 2 }}>
+                          <Typography
+                            variant="body2"
+                            color={theme.palette.text.secondary}
+                          >
                             {format(new Date(match.startsAt), "MMM dd, HH:mm")}
                           </Typography>
                         </TableCell>
-                        <TableCell align="center">
+                        <TableCell align="center" sx={{ py: 2 }}>
                           <Button
                             variant={
                               matchSelections.includes(MatchResult.HOME)
@@ -843,7 +918,7 @@ function BetPageContent({ tournamentId }: Props) {
                             1
                           </Button>
                         </TableCell>
-                        <TableCell align="center">
+                        <TableCell align="center" sx={{ py: 2 }}>
                           <Button
                             variant={
                               matchSelections.includes(MatchResult.DRAW)
@@ -859,7 +934,7 @@ function BetPageContent({ tournamentId }: Props) {
                             X
                           </Button>
                         </TableCell>
-                        <TableCell align="center">
+                        <TableCell align="center" sx={{ py: 2 }}>
                           <Button
                             variant={
                               matchSelections.includes(MatchResult.AWAY)
@@ -875,7 +950,7 @@ function BetPageContent({ tournamentId }: Props) {
                             2
                           </Button>
                         </TableCell>
-                        <TableCell>
+                        <TableCell sx={{ py: 2 }}>
                           {matchSelections.length > 0 ? (
                             <Box display="flex" gap={0.5} flexWrap="wrap">
                               {matchSelections.map((result) => (
@@ -889,7 +964,10 @@ function BetPageContent({ tournamentId }: Props) {
                               ))}
                             </Box>
                           ) : (
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography
+                              variant="body2"
+                              color={theme.palette.text.secondary}
+                            >
                               None selected
                             </Typography>
                           )}
@@ -1028,7 +1106,7 @@ function BetPageContent({ tournamentId }: Props) {
               <Button
                 variant="contained"
                 fullWidth
-                size={isMobile ? "medium" : "large"}
+                size={isMobile ? "small" : "large"}
                 onClick={handleSubmitBet}
                 disabled={!calculateBet.isValid || submitting}
                 sx={{
