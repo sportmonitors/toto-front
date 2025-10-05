@@ -3,6 +3,8 @@
   "loading": "Loading ...",
   "navigation": {
     "home": "Home",
+    "tournaments": "Tournaments",
+    "createTournament": "Create Tournament",
     "signIn": "Sign In",
     "signUp": "Sign Up",
     "profile": "Profile",

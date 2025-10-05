@@ -22,17 +22,23 @@ import Divider from "@mui/material/Divider";
 import ThemeSwitchButton from "@/components/switch-theme-button";
 import { IS_SIGN_UP_ENABLED } from "@/services/auth/config";
 import { useTheme } from "@mui/material/styles";
+import { usePathname } from "next/navigation";
 
 function ResponsiveAppBar() {
   const theme = useTheme();
   const { t } = useTranslation("common");
   const { user, isLoaded } = useAuth();
   const { logOut } = useAuthActions();
+  const pathname = usePathname();
   const [anchorElementNav, setAnchorElementNav] = useState<null | HTMLElement>(
     null
   );
   const [anchorElementUser, setAnchorElementUser] =
     useState<null | HTMLElement>(null);
+
+  // Hide app bar on public tournaments pages (not admin panel tournaments)
+  const isTournamentsPage =
+    pathname?.includes("/tournaments") && !pathname?.includes("/admin-panel");
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElementNav(event.currentTarget);
@@ -48,6 +54,11 @@ function ResponsiveAppBar() {
   const handleCloseUserMenu = () => {
     setAnchorElementUser(null);
   };
+
+  // Don't render app bar on tournaments pages
+  if (isTournamentsPage) {
+    return null;
+  }
 
   return (
     <AppBar
@@ -124,6 +135,18 @@ function ResponsiveAppBar() {
                 </Typography>
               </MenuItem>
 
+              {user && (
+                <MenuItem
+                  onClick={handleCloseNavMenu}
+                  component={Link}
+                  href="/tournaments"
+                >
+                  <Typography textAlign="center" sx={{ color: "#ffffff" }}>
+                    {t("common:navigation.tournaments")}
+                  </Typography>
+                </MenuItem>
+              )}
+
               {!!user?.role &&
                 [RoleEnum.ADMIN].includes(Number(user?.role?.id)) && [
                   <MenuItem
@@ -134,6 +157,16 @@ function ResponsiveAppBar() {
                   >
                     <Typography textAlign="center" sx={{ color: "#ffffff" }}>
                       {t("common:navigation.users")}
+                    </Typography>
+                  </MenuItem>,
+                  <MenuItem
+                    key="create-tournament"
+                    onClick={handleCloseNavMenu}
+                    component={Link}
+                    href="/admin-panel/tournaments/create"
+                  >
+                    <Typography textAlign="center" sx={{ color: "#ffffff" }}>
+                      {t("common:navigation.createTournament")}
                     </Typography>
                   </MenuItem>,
                   // mobile-menu-items
@@ -198,6 +231,21 @@ function ResponsiveAppBar() {
               {t("common:navigation.home")}
             </Button>
 
+            {user && (
+              <Button
+                onClick={handleCloseNavMenu}
+                sx={{
+                  my: 2,
+                  color: "#ffffff",
+                  display: "block",
+                }}
+                component={Link}
+                href="/tournaments"
+              >
+                {t("common:navigation.tournaments")}
+              </Button>
+            )}
+
             {!!user?.role &&
               [RoleEnum.ADMIN].includes(Number(user?.role?.id)) && (
                 <>
@@ -212,6 +260,18 @@ function ResponsiveAppBar() {
                     href="/admin-panel/users"
                   >
                     {t("common:navigation.users")}
+                  </Button>
+                  <Button
+                    onClick={handleCloseNavMenu}
+                    sx={{
+                      my: 2,
+                      color: "#ffffff",
+                      display: "block",
+                    }}
+                    component={Link}
+                    href="/admin-panel/tournaments/create"
+                  >
+                    {t("common:navigation.createTournament")}
                   </Button>
                   {/* desktop-menu-items */}
                 </>
