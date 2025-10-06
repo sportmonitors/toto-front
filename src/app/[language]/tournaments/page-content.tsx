@@ -156,8 +156,6 @@ function TournamentsUser() {
                 (tournament.prizeGold || 0) +
                 (tournament.prizeSilver || 0) +
                 (tournament.prizeBronze || 0);
-              const gamesCompleted = Math.floor(Math.random() * 8) + 1; // Mock data - replace with actual data
-              const totalGames = 8; // Mock data - replace with actual data
 
               return (
                 <Grid

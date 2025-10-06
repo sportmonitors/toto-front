@@ -41,6 +41,9 @@ function ResponsiveAppBar() {
   const isTournamentsPage =
     pathname?.includes("/tournaments") && !pathname?.includes("/admin-panel");
 
+  // Hide app bar on bets page
+  const isBetsPage = pathname?.includes("/profile/bets");
+
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElementNav(event.currentTarget);
   };
@@ -56,8 +59,8 @@ function ResponsiveAppBar() {
     setAnchorElementUser(null);
   };
 
-  // Don't render app bar on tournaments pages
-  if (isTournamentsPage) {
+  // Don't render app bar on tournaments pages or bets page
+  if (isTournamentsPage || isBetsPage) {
     return null;
   }
 
