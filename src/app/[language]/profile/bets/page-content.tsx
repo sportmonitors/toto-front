@@ -24,13 +24,19 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { useSnackbar } from "@/hooks/use-snackbar";
+import { getTokensInfo } from "@/services/auth/auth-tokens-info";
 
 function BetsPageContent() {
   const { t } = useTranslation("bets");
   const { enqueueSnackbar } = useSnackbar();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
   const [bets, setBets] = useState<Bet[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -41,7 +47,17 @@ function BetsPageContent() {
   const loadBets = async () => {
     try {
       setLoading(true);
-      const response = await getMyBets();
+
+      // Get authentication token
+      const tokens = getTokensInfo();
+      if (!tokens?.token) {
+        enqueueSnackbar("Authentication required", {
+          variant: "error",
+        });
+        return;
+      }
+
+      const response = await getMyBets(tokens.token);
       setBets(response?.data || []);
     } catch (error) {
       console.error("Failed to load bets:", error);
@@ -104,28 +120,62 @@ function BetsPageContent() {
 
   if (loading) {
     return (
-      <Container maxWidth="lg">
+      <Container
+        maxWidth="xl"
+        sx={{
+          background: theme.palette.background.gradient,
+          minHeight: "100vh",
+        }}
+      >
         <Box
           display="flex"
           justifyContent="center"
           alignItems="center"
           minHeight="200px"
+          px={isMobile ? 2 : 3}
         >
-          <Typography>{t("loading")}</Typography>
+          <Typography
+            variant={isMobile ? "body1" : "h6"}
+            sx={{ color: theme.palette.text.primary }}
+          >
+            {t("loading")}
+          </Typography>
         </Box>
       </Container>
     );
   }
 
   return (
-    <Container maxWidth="lg">
-      <Grid container spacing={3} pt={3}>
+    <Container
+      maxWidth="xl"
+      sx={{
+        px: isMobile ? 2 : 3,
+        py: isMobile ? 2 : 3,
+        background: theme.palette.background.gradient,
+        minHeight: "100vh",
+        pb: isMobile ? 4 : 6,
+      }}
+    >
+      <Grid container spacing={isMobile ? 2 : 3}>
         {/* Header */}
         <Grid size={{ xs: 12 }}>
-          <Typography variant="h3" gutterBottom>
+          <Typography
+            variant={isMobile ? "h4" : "h3"}
+            gutterBottom
+            sx={{
+              fontWeight: 700,
+              color: theme.palette.text.primary,
+            }}
+          >
             {t("title")}
           </Typography>
-          <Typography variant="body1" color="text.secondary" paragraph>
+          <Typography
+            variant={isMobile ? "body2" : "body1"}
+            sx={{
+              color: theme.palette.text.secondary,
+              mb: 2,
+            }}
+          >
             {t("description")}
           </Typography>
         </Grid>
@@ -133,67 +183,154 @@ function BetsPageContent() {
         {/* Bets List */}
         <Grid size={{ xs: 12 }}>
           {bets.length === 0 ? (
-            <Card>
-              <CardContent>
-                <Box textAlign="center" py={4}>
-                  <SportsIcon
-                    sx={{ fontSize: 64, color: "text.secondary", mb: 2 }}
-                  />
-                  <Typography variant="h6" color="text.secondary" gutterBottom>
-                    {t("noBets")}
-                  </Typography>
-                  <Typography variant="body1" color="text.secondary">
-                    {t("noBetsDescription")}
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
+            <Box textAlign="center" py={isMobile ? 6 : 8}>
+              <SportsIcon
+                sx={{
+                  fontSize: isMobile ? 48 : 64,
+                  color: "text.secondary",
+                  mb: 2,
+                }}
+              />
+              <Typography
+                variant={isMobile ? "h6" : "h5"}
+                gutterBottom
+                sx={{
+                  fontSize: isMobile ? "1.25rem" : undefined,
+                  fontWeight: 600,
+                  color: theme.palette.text.secondary,
+                }}
+              >
+                {t("noBets")}
+              </Typography>
+              <Typography
+                variant={isMobile ? "body2" : "body1"}
+                sx={{
+                  fontSize: isMobile ? "0.875rem" : undefined,
+                  maxWidth: isMobile ? "280px" : "400px",
+                  mx: "auto",
+                  color: theme.palette.text.secondary,
+                }}
+              >
+                {t("noBetsDescription")}
+              </Typography>
+            </Box>
           ) : (
-            <Grid container spacing={2}>
+            <Grid container spacing={isMobile ? 2 : 3}>
               {bets.map((bet) => (
                 <Grid size={{ xs: 12 }} key={bet.id}>
-                  <Accordion>
-                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Accordion
+                    sx={{
+                      backgroundColor: "#ffffff",
+                      borderRadius: 3,
+                      boxShadow: "none",
+                      border: "1px solid rgba(0, 0, 0, 0.1)",
+                      transition: "all 0.2s ease-in-out",
+                      "&:hover": {
+                        transform: "translateY(-2px)",
+                        boxShadow: 4,
+                      },
+                      "&:before": {
+                        display: "none",
+                      },
+                    }}
+                  >
+                    <AccordionSummary
+                      expandIcon={
+                        <ExpandMoreIcon
+                          sx={{
+                            color: theme.palette.primary.main,
+                          }}
+                        />
+                      }
+                      sx={{
+                        px: isMobile ? 2 : 3,
+                        py: isMobile ? 1.5 : 2,
+                        "& .MuiAccordionSummary-content": {
+                          margin: isMobile ? "8px 0" : "12px 0",
+                        },
+                      }}
+                    >
                       <Box
                         display="flex"
-                        alignItems="center"
+                        alignItems={isMobile ? "flex-start" : "center"}
                         width="100%"
-                        gap={2}
+                        gap={isMobile ? 1 : 2}
+                        flexDirection={isMobile ? "column" : "row"}
                       >
-                        <Box flexGrow={1}>
-                          <Typography variant="h6">
+                        <Box flexGrow={1} width="100%">
+                          <Typography
+                            variant={isMobile ? "subtitle1" : "h6"}
+                            sx={{
+                              fontWeight: 700,
+                              color: theme.palette.primary.main,
+                              mb: 0.5,
+                            }}
+                          >
                             {bet.tournament.name}
                           </Typography>
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: theme.palette.text.secondary,
+                              fontSize: isMobile ? "0.75rem" : "0.875rem",
+                            }}
+                          >
                             {t("placedOn")}{" "}
-                            {format(new Date(bet.createdAt), "PPp")}
+                            {format(
+                              new Date(bet.createdAt),
+                              isMobile ? "MMM dd, HH:mm" : "PPp"
+                            )}
                           </Typography>
                         </Box>
 
-                        <Box display="flex" alignItems="center" gap={1}>
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          gap={isMobile ? 0.5 : 1}
+                          flexWrap="wrap"
+                          justifyContent={isMobile ? "flex-start" : "flex-end"}
+                        >
                           <Chip
                             label={bet.status.toUpperCase()}
                             color={getStatusColor(bet.status)}
-                            size="small"
+                            size={isMobile ? "small" : "small"}
+                            sx={{
+                              fontWeight: 600,
+                              fontSize: isMobile ? "0.7rem" : "0.75rem",
+                            }}
                           />
 
                           {bet.prizeGroup !== "none" && (
                             <Chip
                               label={`${getPrizeGroupIcon(bet.prizeGroup)} ${bet.prizeGroup.toUpperCase()}`}
                               color={getPrizeGroupColor(bet.prizeGroup)}
-                              size="small"
+                              size={isMobile ? "small" : "small"}
+                              sx={{
+                                fontWeight: 600,
+                                fontSize: isMobile ? "0.7rem" : "0.75rem",
+                              }}
                             />
                           )}
 
-                          <Typography variant="body2" fontWeight="medium">
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontWeight: 700,
+                              color: theme.palette.text.primary,
+                              fontSize: isMobile ? "0.75rem" : "0.875rem",
+                            }}
+                          >
                             ${Number(bet.totalAmount).toFixed(2)}
                           </Typography>
 
                           {bet.prizeAmount && Number(bet.prizeAmount) > 0 && (
                             <Typography
                               variant="body2"
-                              color="success.main"
-                              fontWeight="medium"
+                              sx={{
+                                color: "#4caf50",
+                                fontWeight: 700,
+                                fontSize: isMobile ? "0.75rem" : "0.875rem",
+                              }}
                             >
                               +${Number(bet.prizeAmount).toFixed(2)}
                             </Typography>
@@ -202,36 +339,84 @@ function BetsPageContent() {
                       </Box>
                     </AccordionSummary>
 
-                    <AccordionDetails>
-                      <Grid container spacing={3}>
+                    <AccordionDetails
+                      sx={{ px: isMobile ? 2 : 3, pb: isMobile ? 2 : 3 }}
+                    >
+                      <Grid container spacing={isMobile ? 2 : 3}>
                         {/* Bet Summary */}
                         <Grid size={{ xs: 12, md: 4 }}>
-                          <Card variant="outlined">
-                            <CardContent>
-                              <Typography variant="h6" gutterBottom>
+                          <Card
+                            variant="outlined"
+                            sx={{
+                              backgroundColor: "#f8f9fa",
+                              borderRadius: 2,
+                              border: "1px solid rgba(0, 0, 0, 0.1)",
+                              height: "fit-content",
+                            }}
+                          >
+                            <CardContent sx={{ p: isMobile ? 1.5 : 2 }}>
+                              <Typography
+                                variant="h6"
+                                gutterBottom
+                                sx={{
+                                  fontWeight: 700,
+                                  color: theme.palette.primary.main,
+                                }}
+                              >
                                 {t("betSummary")}
                               </Typography>
 
                               <Box mb={1}>
-                                <Typography variant="body2">
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    color: theme.palette.text.secondary,
+                                  }}
+                                >
                                   {t("totalLines")}:{" "}
-                                  <strong>
+                                  <strong
+                                    style={{
+                                      color: theme.palette.text.primary,
+                                    }}
+                                  >
                                     {bet.totalLines.toLocaleString()}
                                   </strong>
                                 </Typography>
                               </Box>
 
                               <Box mb={1}>
-                                <Typography variant="body2">
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    color: theme.palette.text.secondary,
+                                  }}
+                                >
                                   {t("linePrice")}:{" "}
-                                  <strong>${bet.linePrice}</strong>
+                                  <strong
+                                    style={{
+                                      color: theme.palette.text.primary,
+                                    }}
+                                  >
+                                    ${bet.linePrice}
+                                  </strong>
                                 </Typography>
                               </Box>
 
                               <Box mb={1}>
-                                <Typography variant="body2">
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    color: theme.palette.text.secondary,
+                                  }}
+                                >
                                   {t("totalCost")}:{" "}
-                                  <strong>${Number(bet.totalAmount).toFixed(2)}</strong>
+                                  <strong
+                                    style={{
+                                      color: theme.palette.text.primary,
+                                    }}
+                                  >
+                                    ${Number(bet.totalAmount).toFixed(2)}
+                                  </strong>
                                 </Typography>
                               </Box>
 
@@ -239,9 +424,20 @@ function BetsPageContent() {
                                 bet.status !== "active" && (
                                   <>
                                     <Box mb={1}>
-                                      <Typography variant="body2">
+                                      <Typography
+                                        variant="body2"
+                                        sx={{
+                                          color: theme.palette.text.secondary,
+                                        }}
+                                      >
                                         {t("wrongPredictions")}:{" "}
-                                        <strong>{bet.wrongPredictions}</strong>
+                                        <strong
+                                          style={{
+                                            color: theme.palette.text.primary,
+                                          }}
+                                        >
+                                          {bet.wrongPredictions}
+                                        </strong>
                                       </Typography>
                                     </Box>
 
@@ -249,11 +445,14 @@ function BetsPageContent() {
                                       <Box mb={1}>
                                         <Typography
                                           variant="body2"
-                                          color="success.main"
+                                          sx={{
+                                            color: "#4caf50",
+                                          }}
                                         >
                                           {t("prizeWon")}:{" "}
                                           <strong>
-                                            ${Number(bet.prizeAmount).toFixed(2)}
+                                            $
+                                            {Number(bet.prizeAmount).toFixed(2)}
                                           </strong>
                                         </Typography>
                                       </Box>
@@ -266,44 +465,157 @@ function BetsPageContent() {
 
                         {/* Selections */}
                         <Grid size={{ xs: 12, md: 8 }}>
-                          <Typography variant="h6" gutterBottom>
+                          <Typography
+                            variant="h6"
+                            gutterBottom
+                            sx={{
+                              fontWeight: 700,
+                              color: theme.palette.primary.main,
+                            }}
+                          >
                             {t("matchSelections")}
                           </Typography>
 
-                          <TableContainer component={Paper} variant="outlined">
-                            <Table size="small">
+                          <TableContainer
+                            component={Paper}
+                            variant="outlined"
+                            sx={{
+                              backgroundColor: "#f8f9fa",
+                              borderRadius: 2,
+                              border: "1px solid rgba(0, 0, 0, 0.1)",
+                            }}
+                          >
+                            <Table size={isMobile ? "small" : "small"}>
                               <TableHead>
                                 <TableRow>
-                                  <TableCell>{t("match")}</TableCell>
-                                  <TableCell>{t("teams")}</TableCell>
-                                  <TableCell>{t("selected")}</TableCell>
-                                  <TableCell>{t("result")}</TableCell>
-                                  <TableCell>{t("status")}</TableCell>
+                                  <TableCell
+                                    sx={{
+                                      fontWeight: 700,
+                                      color: theme.palette.text.primary,
+                                      fontSize: isMobile
+                                        ? "0.75rem"
+                                        : "0.875rem",
+                                      padding: isMobile ? "8px 4px" : "16px",
+                                    }}
+                                  >
+                                    {t("match")}
+                                  </TableCell>
+                                  <TableCell
+                                    sx={{
+                                      fontWeight: 700,
+                                      color: theme.palette.text.primary,
+                                      fontSize: isMobile
+                                        ? "0.75rem"
+                                        : "0.875rem",
+                                      padding: isMobile ? "8px 4px" : "16px",
+                                    }}
+                                  >
+                                    {t("teams")}
+                                  </TableCell>
+                                  <TableCell
+                                    sx={{
+                                      fontWeight: 700,
+                                      color: theme.palette.text.primary,
+                                      fontSize: isMobile
+                                        ? "0.75rem"
+                                        : "0.875rem",
+                                      padding: isMobile ? "8px 4px" : "16px",
+                                    }}
+                                  >
+                                    {t("selected")}
+                                  </TableCell>
+                                  <TableCell
+                                    sx={{
+                                      fontWeight: 700,
+                                      color: theme.palette.text.primary,
+                                      fontSize: isMobile
+                                        ? "0.75rem"
+                                        : "0.875rem",
+                                      padding: isMobile ? "8px 4px" : "16px",
+                                    }}
+                                  >
+                                    {t("result")}
+                                  </TableCell>
+                                  <TableCell
+                                    sx={{
+                                      fontWeight: 700,
+                                      color: theme.palette.text.primary,
+                                      fontSize: isMobile
+                                        ? "0.75rem"
+                                        : "0.875rem",
+                                      padding: isMobile ? "8px 4px" : "16px",
+                                    }}
+                                  >
+                                    {t("status")}
+                                  </TableCell>
                                 </TableRow>
                               </TableHead>
                               <TableBody>
                                 {bet.selections.map((selection) => (
-                                  <TableRow key={selection.id}>
-                                    <TableCell>
+                                  <TableRow
+                                    key={selection.id}
+                                    sx={{
+                                      "&:hover": {
+                                        backgroundColor: "#f8f9fa",
+                                      },
+                                    }}
+                                  >
+                                    <TableCell
+                                      sx={{
+                                        fontWeight: 600,
+                                        color: theme.palette.text.primary,
+                                        fontSize: isMobile
+                                          ? "0.7rem"
+                                          : "0.875rem",
+                                        padding: isMobile ? "8px 4px" : "16px",
+                                      }}
+                                    >
                                       #{selection.match.matchOrder}
                                     </TableCell>
-                                    <TableCell>
-                                      <Typography variant="body2">
+                                    <TableCell
+                                      sx={{
+                                        padding: isMobile ? "8px 4px" : "16px",
+                                      }}
+                                    >
+                                      <Typography
+                                        variant="body2"
+                                        sx={{
+                                          fontWeight: 600,
+                                          color: theme.palette.text.primary,
+                                          fontSize: isMobile
+                                            ? "0.7rem"
+                                            : "0.875rem",
+                                          lineHeight: 1.2,
+                                        }}
+                                      >
                                         {selection.match.homeTeam} vs{" "}
                                         {selection.match.awayTeam}
                                       </Typography>
                                       <Typography
                                         variant="caption"
-                                        color="text.secondary"
+                                        sx={{
+                                          color: theme.palette.text.secondary,
+                                          fontSize: isMobile
+                                            ? "0.65rem"
+                                            : "0.75rem",
+                                        }}
                                       >
                                         {format(
                                           new Date(selection.match.startsAt),
-                                          "MMM dd, HH:mm"
+                                          isMobile ? "MMM dd" : "MMM dd, HH:mm"
                                         )}
                                       </Typography>
                                     </TableCell>
-                                    <TableCell>
-                                      <Box display="flex" gap={0.5}>
+                                    <TableCell
+                                      sx={{
+                                        padding: isMobile ? "8px 4px" : "16px",
+                                      }}
+                                    >
+                                      <Box
+                                        display="flex"
+                                        gap={isMobile ? 0.25 : 0.5}
+                                        flexWrap="wrap"
+                                      >
                                         {selection.selectedResults.map(
                                           (result) => (
                                             <Chip
@@ -311,6 +623,24 @@ function BetsPageContent() {
                                               label={result}
                                               size="small"
                                               variant="outlined"
+                                              sx={{
+                                                fontWeight: 600,
+                                                color:
+                                                  theme.palette.primary.main,
+                                                borderColor:
+                                                  theme.palette.primary.main,
+                                                fontSize: isMobile
+                                                  ? "0.65rem"
+                                                  : "0.75rem",
+                                                height: isMobile
+                                                  ? "20px"
+                                                  : "24px",
+                                                "&:hover": {
+                                                  backgroundColor:
+                                                    theme.palette.primary.main,
+                                                  color: "white",
+                                                },
+                                              }}
                                             />
                                           )
                                         )}
@@ -326,22 +656,34 @@ function BetsPageContent() {
                                               ? "success"
                                               : "error"
                                           }
+                                          sx={{
+                                            fontWeight: 600,
+                                          }}
                                         />
                                       ) : (
                                         <Typography
                                           variant="body2"
-                                          color="text.secondary"
+                                          sx={{
+                                            color: theme.palette.text.secondary,
+                                          }}
                                         >
                                           {t("pending")}
                                         </Typography>
                                       )}
                                     </TableCell>
                                     <TableCell>
-                                      {selection.match.result
-                                        ? selection.isWinning
-                                          ? "✅"
-                                          : "❌"
-                                        : "⏳"}
+                                      <Typography
+                                        variant="body2"
+                                        sx={{
+                                          fontSize: "1.2rem",
+                                        }}
+                                      >
+                                        {selection.match.result
+                                          ? selection.isWinning
+                                            ? "✅"
+                                            : "❌"
+                                          : "⏳"}
+                                      </Typography>
                                     </TableCell>
                                   </TableRow>
                                 ))}

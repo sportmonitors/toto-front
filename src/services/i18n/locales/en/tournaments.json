@@ -56,6 +56,8 @@
     "invalidSelection": "Invalid selection",
     "pleaseCompleteAllSelections": "Please complete all selections",
     "betPlacedSuccessfully": "Bet placed successfully!",
+    "betPlacedFailed": "Failed to place bet. Please try again.",
+    "authenticationRequired": "Authentication required. Please sign in to place bets.",
     "status": "Status",
     "myBets": "My Bets",
     "noBets": "No bets placed yet",

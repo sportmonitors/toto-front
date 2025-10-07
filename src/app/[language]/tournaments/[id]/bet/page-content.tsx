@@ -34,6 +34,9 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import GroupIcon from "@mui/icons-material/Group";
 import { RoleEnum } from "@/services/api/types/role";
+import { createBet } from "@/services/api/services/bets";
+import HTTP_CODES_ENUM from "@/services/api/types/http-codes";
+import { getTokensInfo } from "@/services/auth/auth-tokens-info";
 
 interface BetSelection {
   matchId: string | number;
@@ -157,6 +160,15 @@ function BetPageContent({ tournamentId }: Props) {
     try {
       setSubmitting(true);
 
+      // Get authentication token
+      const tokens = getTokensInfo();
+      if (!tokens?.token) {
+        enqueueSnackbar(t("betting.authenticationRequired"), {
+          variant: "error",
+        });
+        return;
+      }
+
       // Prepare bet data
       const betData = {
         tournamentId: tournamentId,
@@ -168,8 +180,7 @@ function BetPageContent({ tournamentId }: Props) {
           })),
       };
 
-      // TODO: Call API to create bet
-      console.log("Submitting bet:", betData);
+      const response = await createBet(betData, tokens.token);
 
       enqueueSnackbar(t("betting.betPlacedSuccessfully"), {
         variant: "success",
@@ -177,7 +188,7 @@ function BetPageContent({ tournamentId }: Props) {
       router.push("/profile/bets");
     } catch (error) {
       console.error("Failed to place bet:", error);
-      enqueueSnackbar("Failed to place bet", {
+      enqueueSnackbar(t("betting.betPlacedFailed"), {
         variant: "error",
       });
     } finally {
