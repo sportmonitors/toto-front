@@ -39,3 +39,6 @@ export interface MyBetsResponse {
   data: Bet[];
 }
 
+
+
+

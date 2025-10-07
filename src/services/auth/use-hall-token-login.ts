@@ -62,3 +62,4 @@ export default function useHallTokenLogin() {
 
   return { isLoading, error };
 }
+
