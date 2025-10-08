@@ -29,15 +29,26 @@ async function wrapperFetchJsonResponse<T>(config: {
   });
 
   const status = response.status as FetchJsonResponse<T>["status"];
+  
+  let data: T | undefined;
+  if (![
+    HTTP_CODES_ENUM.NO_CONTENT,
+    HTTP_CODES_ENUM.SERVICE_UNAVAILABLE,
+    HTTP_CODES_ENUM.INTERNAL_SERVER_ERROR,
+  ].includes(status)) {
+    try {
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+      }
+    } catch (error) {
+      console.warn("Failed to parse JSON response:", error);
+    }
+  }
+
   return {
     status,
-    data: [
-      HTTP_CODES_ENUM.NO_CONTENT,
-      HTTP_CODES_ENUM.SERVICE_UNAVAILABLE,
-      HTTP_CODES_ENUM.INTERNAL_SERVER_ERROR,
-    ].includes(status)
-      ? undefined
-      : await response.json(),
+    data,
   };
 }
 

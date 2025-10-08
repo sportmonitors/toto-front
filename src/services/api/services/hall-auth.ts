@@ -1,6 +1,5 @@
-import { fetchJsonResponse } from "../wrapper-fetch-json-response";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
 
 export interface HallTokenLoginRequest {
   token: string;
@@ -27,5 +26,10 @@ export const hallTokenLogin = async (
     body: JSON.stringify(data),
   });
 
-  return fetchJsonResponse<HallTokenLoginResponse>(response);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  return result as HallTokenLoginResponse;
 };
