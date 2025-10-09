@@ -18,6 +18,7 @@ import GoogleAuthProvider from "@/services/social-auth/google/google-auth-provid
 import FacebookAuthProvider from "@/services/social-auth/facebook/facebook-auth-provider";
 import ConfirmDialogProvider from "@/components/confirm-dialog/confirm-dialog-provider";
 import InitColorSchemeScript from "@/components/theme/init-color-scheme-script";
+import DebugAuthFloating from "@/components/debug-auth-floating";
 import { inter, roboto, vazir } from "@/lib/fonts";
 
 type Props = {
@@ -70,6 +71,7 @@ export default async function RootLayout(props: {
                       <LeavePageProvider>
                         <ResponsiveAppBar />
                         {children}
+                        <DebugAuthFloating />
                         <ToastContainer
                           position="bottom-left"
                           hideProgressBar
