@@ -46,14 +46,15 @@ export default function ProductionFloatingUserInfo({
 
       if (response.ok) {
         const data = await response.json();
+        console.log("Balance API response:", data);
         setBalance(data.balance || 0);
       } else {
-        console.warn("Failed to fetch balance, using fallback");
-        setBalance(1000);
+        console.warn("Failed to fetch balance, status:", response.status);
+        setBalance(0);
       }
     } catch (error) {
       console.error("Failed to fetch balance:", error);
-      setBalance(1000);
+      setBalance(0);
     } finally {
       setLoading(false);
     }
