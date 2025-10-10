@@ -22,7 +22,7 @@ class SocketClient {
     }
 
     // Socket.IO should connect to the main server, not the API endpoint
-    const serverUrl = "http://localhost:3000";
+    const serverUrl = process.env.NEXT_PUBLIC_API_SOCKET;
 
     console.log("Connecting to Socket.IO server:", serverUrl);
     console.log("Token available:", !!tokens.token);
