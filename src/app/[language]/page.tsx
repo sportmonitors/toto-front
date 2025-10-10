@@ -33,30 +33,7 @@ export default async function Home(props: Props) {
         direction="column"
         sx={{ height: "90vh", justifyContent: "space-between" }}
       >
-        <Grid size="grow">
-          <Typography variant="h3" data-testid="home-title" gutterBottom>
-            {t("title")}
-          </Typography>
-          <Typography>
-            <Trans
-              i18nKey={`description`}
-              t={t}
-              components={[
-                <MuiLink
-                  key="1"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://github.com/brocoders/extensive-react-boilerplate/blob/main/docs/README.md"
-                >
-                  {}
-                </MuiLink>,
-              ]}
-            />
-          </Typography>
-        </Grid>
-        <Grid sx={{ mx: "auto" }}>
-          <MuiLink href="/privacy-policy">Privacy Policy</MuiLink>
-        </Grid>
+        <Grid size="grow"></Grid>
       </Grid>
     </Container>
   );

@@ -71,7 +71,7 @@ export default async function RootLayout(props: {
                       <LeavePageProvider>
                         <ResponsiveAppBar />
                         {children}
-                        <SimpleFloatingUserInfo position="top-right" />
+                        <SimpleFloatingUserInfo position="bottom-right" />
                         <ToastContainer
                           position="bottom-left"
                           hideProgressBar
